@@ -1,8 +1,7 @@
 "use client";
 import React from 'react';
 import useSWR from 'swr';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 import { useCartStore, Product } from '@/store/cart';
 import { Plus } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -10,14 +9,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ProductSkeleton } from './ProductSkeleton';
 
-const fetchProducts = async () => {
-    const q = query(collection(db, "products"), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
-    const items: Product[] = [];
-    querySnapshot.forEach((doc) => {
-        items.push({ id: doc.id, ...doc.data() } as Product);
-    });
-    return items;
+const fetchProducts = async (): Promise<Product[]> => {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return (data || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        priceIQD: p.price_iqd,
+        image: p.image_url,
+        description: p.description
+    }));
 };
 
 export default function ProductGrid() {
@@ -31,8 +38,8 @@ export default function ProductGrid() {
 
     if (error) {
         return (
-            <div className="py-20 text-center text-red-500">
-                Failed to load products. Please try again later.
+            <div className="py-20 text-center text-red-500 font-cairo">
+                Failed to load products. Check Supabase connection.
             </div>
         );
     }
@@ -52,7 +59,7 @@ export default function ProductGrid() {
                             <div key={product.id} className="group relative bg-[#1a1a1a] rounded-2xl overflow-hidden hover:shadow-[0_0_30px_rgba(0,212,255,0.1)] transition-all duration-300 border border-white/5 hover:border-primary/30">
                                 <Link href={`/products/${product.id}`} className="block relative h-64 overflow-hidden">
                                     <Image
-                                        src={product.image}
+                                        src={product.image || '/hero_background.png'}
                                         alt={product.name}
                                         fill
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

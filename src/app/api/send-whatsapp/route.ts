@@ -1,33 +1,32 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { customerName, phone, items, total, address } = body;
 
-        // Use process.env but fail safe if missing (though user should set them)
+        // Use process.env
         const instanceId = process.env.ULTRAMSG_INSTANCE_ID || 'instance157099';
         const token = process.env.ULTRAMSG_TOKEN || 'vrrnaykbbdmfzbr0';
         const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER;
 
-        // Save Order to Firestore First (Critical Path)
+        // Save Order to Supabase (Critical Path)
         try {
-            const { db } = await import('@/lib/firebase');
-            const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+            const { error: dbError } = await supabase
+                .from('orders')
+                .insert([{
+                    customer_name: customerName,
+                    phone: phone,
+                    address: address,
+                    items: items,
+                    total: total,
+                    status: 'pending'
+                }]);
 
-            await addDoc(collection(db, 'orders'), {
-                customerName,
-                phone,
-                address,
-                items,
-                total,
-                status: 'pending',
-                createdAt: serverTimestamp()
-            });
+            if (dbError) throw dbError;
         } catch (dbError) {
-            console.error("CRITICAL: Error saving to Firestore:", dbError);
-            // If DB fails, we might still want to try notifying, or fail. 
-            // Usually DB failure is fatal for an "Order", but let's proceed to allow user feedback if possible.
+            console.error("CRITICAL: Error saving to Supabase:", dbError);
         }
 
         // WhatsApp Notification (Non-blocking / Fail-safe)
@@ -37,7 +36,6 @@ export async function POST(request: Request) {
             const payload = { token, to, body: text };
 
             try {
-                // Add 5s timeout to prevent hanging
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
 
@@ -60,7 +58,6 @@ export async function POST(request: Request) {
 
         const itemsList = items.map((item: any) => `- ${item.name} (x${item.quantity}) - $${item.price * item.quantity}`).join('\n');
 
-        // Admin Message
         const adminMsg = `
 🚨 *New Order Received* 🚨
 
@@ -74,7 +71,6 @@ ${itemsList}
 💰 *Total:* $${total}
         `.trim();
 
-        // Customer Message
         const customerMsg = `
 👋 Hi ${customerName},
 
@@ -88,15 +84,13 @@ ${itemsList}
 We will process it shortly.
         `.trim();
 
-        // Fire and forget WhatsApp messages to not block response
+        // Fire and forget WhatsApp messages
         if (adminPhone) sendWhatsApp(adminPhone, adminMsg);
         if (phone) sendWhatsApp(phone, customerMsg);
 
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('API Error:', error);
-        // Return true to UI so user doesn't get stuck, even if something internal blew up
         return NextResponse.json({ success: true, warning: 'Internal logic error' });
     }
 }
-

@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { db, storage } from '@/lib/firebase';
-import { collection, query, orderBy, getDocs, doc, updateDoc, addDoc, deleteDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { supabase } from '@/lib/supabase';
 import { Loader2, RefreshCw, Package, ShoppingCart, Trash2, Plus, Upload, Edit, X, DollarSign, Globe } from 'lucide-react';
 import Image from 'next/image';
 
@@ -25,7 +23,7 @@ export default function AdminPage() {
         description: '',
         priceUSD: '',
         priceIQD: '',
-        image: ''
+        image_url: ''
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,16 +41,25 @@ export default function AdminPage() {
         setLoading(true);
         try {
             if (activeTab === 'orders') {
-                const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-                setOrders(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setOrders(data || []);
             } else {
-                const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
-                setProducts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setProducts(data || []);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
+            alert("Fetch failed. Check Supabase credentials or table permissions.");
         } finally {
             setLoading(false);
         }
@@ -77,41 +84,53 @@ export default function AdminPage() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            let imageUrl = formData.image;
+            let imageUrl = formData.image_url;
 
             if (imageFile) {
-                const storageRef = ref(storage, `products/${Date.now()}-${imageFile.name}`);
-                await uploadBytes(storageRef, imageFile);
-                imageUrl = await getDownloadURL(storageRef);
+                const fileName = `${Date.now()}-${imageFile.name}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('product-images')
+                    .upload(`products/${fileName}`, imageFile);
+
+                if (uploadError) throw uploadError;
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('product-images')
+                    .getPublicUrl(`products/${fileName}`);
+
+                imageUrl = publicUrl;
             }
 
             const productData = {
                 name: formData.name,
                 description: formData.description,
                 price: parseFloat(formData.priceUSD),
-                priceIQD: parseFloat(formData.priceIQD),
-                image: imageUrl,
-                updatedAt: serverTimestamp()
+                price_iqd: parseFloat(formData.priceIQD),
+                image_url: imageUrl,
             };
 
             if (editingProduct) {
-                await updateDoc(doc(db, 'products', editingProduct.id), productData);
+                const { error } = await supabase
+                    .from('products')
+                    .update(productData)
+                    .eq('id', editingProduct.id);
+                if (error) throw error;
             } else {
-                await addDoc(collection(db, 'products'), {
-                    ...productData,
-                    createdAt: serverTimestamp()
-                });
+                const { error } = await supabase
+                    .from('products')
+                    .insert([productData]);
+                if (error) throw error;
             }
 
             setIsFormOpen(false);
             setEditingProduct(null);
-            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image: '' });
+            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '' });
             setImageFile(null);
             fetchData();
             alert(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
         } catch (error) {
             console.error("Error saving product:", error);
-            alert('Failed to save product');
+            alert('Failed to save product. Ensure table has RLS disabled or proper policies.');
         } finally {
             setIsSubmitting(false);
         }
@@ -123,8 +142,8 @@ export default function AdminPage() {
             name: product.name,
             description: product.description || '',
             priceUSD: product.price.toString(),
-            priceIQD: (product.priceIQD || (product.price * EXCHANGE_RATE)).toString(),
-            image: product.image
+            priceIQD: (product.price_iqd || (product.price * EXCHANGE_RATE)).toString(),
+            image_url: product.image_url
         });
         setIsFormOpen(true);
     };
@@ -132,15 +151,23 @@ export default function AdminPage() {
     const deleteProduct = async (product: any) => {
         if (!confirm('Are you sure you want to delete this product?')) return;
         try {
-            if (product.image && product.image.includes('firebasestorage')) {
-                try {
-                    const imageRef = ref(storage, product.image);
-                    await deleteObject(imageRef);
-                } catch (e) { console.warn("Image delete failed", e); }
+            // Delete from Supabase Storage if it's a supabase link
+            if (product.image_url && product.image_url.includes('supabase.co')) {
+                const path = product.image_url.split('/public/product-images/')[1];
+                if (path) {
+                    await supabase.storage.from('product-images').remove([path]);
+                }
             }
-            await deleteDoc(doc(db, 'products', product.id));
+
+            const { error } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', product.id);
+
+            if (error) throw error;
             setProducts(products.filter(p => p.id !== product.id));
         } catch (error) {
+            console.error("Delete error:", error);
             alert('Failed to delete product');
         }
     };
@@ -148,7 +175,12 @@ export default function AdminPage() {
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         setUpdating(orderId);
         try {
-            await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
+            const { error } = await supabase
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', orderId);
+
+            if (error) throw error;
             setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
         } catch (error) {
             alert('Failed to update status');
@@ -160,7 +192,12 @@ export default function AdminPage() {
     const deleteOrder = async (orderId: string) => {
         if (!confirm('Are you sure you want to delete this order?')) return;
         try {
-            await deleteDoc(doc(db, 'orders', orderId));
+            const { error } = await supabase
+                .from('orders')
+                .delete()
+                .eq('id', orderId);
+
+            if (error) throw error;
             setOrders(orders.filter(o => o.id !== orderId));
         } catch (error) {
             alert('Failed to delete order');
@@ -203,7 +240,7 @@ export default function AdminPage() {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">Admin <span className="text-primary">Console</span></h1>
-                            <p className="text-gray-500 text-sm">Real-time Synchronization Active</p>
+                            <p className="text-gray-500 text-sm">Supabase Sync Live</p>
                         </div>
                     </div>
 
@@ -242,17 +279,17 @@ export default function AdminPage() {
                                         <div className="flex flex-col md:flex-row justify-between gap-6">
                                             <div className="space-y-4 flex-1">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{order.createdAt?.seconds ? new Date(order.createdAt.seconds * 1000).toLocaleString() : 'Recent'}</span>
+                                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{new Date(order.created_at).toLocaleString()}</span>
                                                     <button onClick={() => deleteOrder(order.id)} className="p-2 text-gray-600 hover:text-red-500 transition-colors">
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center font-bold text-primary text-xl">
-                                                        {order.customerName?.[0]}
+                                                        {order.customer_name?.[0]}
                                                     </div>
                                                     <div>
-                                                        <h3 className="text-xl font-bold">{order.customerName}</h3>
+                                                        <h3 className="text-xl font-bold">{order.customer_name}</h3>
                                                         <p className="text-gray-400 text-sm">{order.phone}</p>
                                                     </div>
                                                 </div>
@@ -298,7 +335,7 @@ export default function AdminPage() {
                                 <button
                                     onClick={() => {
                                         setEditingProduct(null);
-                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image: '' });
+                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '' });
                                         setIsFormOpen(true);
                                     }}
                                     className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-gray-500 hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2 group"
@@ -311,7 +348,13 @@ export default function AdminPage() {
                                     {products.map(product => (
                                         <div key={product.id} className="group bg-gray-900 rounded-3xl overflow-hidden border border-white/5 shadow-lg hover:border-primary/30 transition-all flex flex-col">
                                             <div className="relative h-56 bg-black p-2">
-                                                <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity" />
+                                                {product.image_url ? (
+                                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-2xl">
+                                                        <Package className="w-12 h-12 text-gray-700" />
+                                                    </div>
+                                                )}
                                                 <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button onClick={() => openEditForm(product)} className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:text-primary"><Edit className="w-4 h-4" /></button>
                                                     <button onClick={() => deleteProduct(product)} className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
@@ -327,7 +370,7 @@ export default function AdminPage() {
                                                     </div>
                                                     <div className="text-right space-y-1">
                                                         <p className="text-xs text-gray-600 font-bold uppercase">IQD Entry</p>
-                                                        <p className="text-xl font-black text-primary">{Math.round(product.priceIQD || (product.price * EXCHANGE_RATE)).toLocaleString()}</p>
+                                                        <p className="text-xl font-black text-primary">{Math.round(product.price_iqd || (product.price * EXCHANGE_RATE)).toLocaleString()}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -420,9 +463,9 @@ export default function AdminPage() {
                                                     <Package className="w-8 h-8 text-primary mx-auto" />
                                                     <p className="text-sm text-white truncate px-4">{imageFile.name}</p>
                                                 </div>
-                                            ) : formData.image ? (
+                                            ) : formData.image_url ? (
                                                 <div className="space-y-2">
-                                                    <img src={formData.image} className="h-20 mx-auto object-cover rounded-lg" />
+                                                    <img src={formData.image_url} className="h-20 mx-auto object-cover rounded-lg" />
                                                     <p className="text-xs text-gray-500">Click to replace image</p>
                                                 </div>
                                             ) : (

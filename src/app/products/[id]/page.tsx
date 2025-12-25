@@ -2,23 +2,33 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
-import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 import { useCartStore, Product } from '@/store/cart';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 
 const fetchProduct = async (id: string): Promise<Product> => {
-    const docRef = doc(db, "products", id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as Product;
-    }
-    throw new Error('Product not found');
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) throw error;
+    if (!data) throw new Error('Product not found');
+
+    return {
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        priceIQD: data.price_iqd,
+        image: data.image_url,
+        description: data.description
+    };
 };
 
 export default function ProductPage() {
@@ -32,9 +42,9 @@ export default function ProductPage() {
     const { dictionary, language } = useLanguage();
 
     if (error) return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="min-h-screen bg-black text-white flex items-center justify-center font-cairo">
             <div className="text-center space-y-4">
-                <p className="text-xl">Product not found</p>
+                <p className="text-xl">Product not found in Supabase.</p>
                 <Link href="/" className="text-primary hover:underline">Back to Shop</Link>
             </div>
         </div>
@@ -52,7 +62,9 @@ export default function ProductPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5">
                         {isLoading ? (
-                            <div className="w-full h-full animate-pulse bg-white/5" />
+                            <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
+                                <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
+                            </div>
                         ) : (
                             <Image
                                 src={product?.image || '/hero_background.png'}
