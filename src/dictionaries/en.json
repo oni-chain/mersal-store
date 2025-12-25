@@ -27,7 +27,15 @@
         "address": "Shipping Address",
         "successTitle": "Order Confirmed!",
         "successMessage": "We have received your order details via WhatsApp.",
-        "continue": "Continue Shopping"
+        "continue": "Continue Shopping",
+        "shippingDetails": "Shipping Details",
+        "orderConfirmedHeader": "Order Confirmed",
+        "loadout": "Your Loadout",
+        "alerts": {
+            "placeOrderFail": "Failed to place order",
+            "timeout": "Request timed out. Please check your connection.",
+            "unexpected": "An unexpected error occurred."
+        }
     },
     "footer": {
         "rights": "All rights reserved."

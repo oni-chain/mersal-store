@@ -43,14 +43,14 @@ export default function Cart() {
             } else {
                 const errorData = await response.json();
                 console.error("Order failed", errorData);
-                alert(`Failed to place order: ${errorData.error || 'Unknown error'}`);
+                alert(`${dictionary.cart.alerts.placeOrderFail}: ${errorData.error || 'Unknown error'}`);
             }
         } catch (error: any) {
             if (error.name === 'AbortError') {
-                alert('Request timed out. Please check your connection and try again.');
+                alert(dictionary.cart.alerts.timeout);
             } else {
                 console.error('Checkout error:', error);
-                alert('An unexpected error occurred. Please try again.');
+                alert(dictionary.cart.alerts.unexpected);
             }
         } finally {
             setLoading(false);
@@ -69,7 +69,7 @@ export default function Cart() {
             <div className="relative w-full max-w-md bg-[#111] h-full shadow-2xl overflow-y-auto border-l border-white/10 flex flex-col">
                 <div className="flex items-center justify-between p-6 border-b border-white/5">
                     <h2 className="text-2xl font-bold text-white uppercase tracking-wider">
-                        {checkoutStep === 'cart' ? 'Your Loadout' : checkoutStep === 'details' ? 'Shipping Details' : 'Order Confirmed'}
+                        {checkoutStep === 'cart' ? dictionary.cart.loadout : checkoutStep === 'details' ? dictionary.cart.shippingDetails : dictionary.cart.orderConfirmedHeader}
                     </h2>
                     <button onClick={toggleCart} className="text-gray-400 hover:text-white">
                         <X className="w-6 h-6" />
@@ -176,7 +176,7 @@ export default function Cart() {
                         {checkoutStep === 'cart' ? (
                             <>
                                 <div className="flex justify-between items-center mb-6">
-                                    <span className="text-gray-400">Total</span>
+                                    <span className="text-gray-400">{dictionary.cart.total}</span>
                                     <span className="text-2xl font-bold text-white">${total.toFixed(2)}</span>
                                 </div>
                                 <button
@@ -192,7 +192,7 @@ export default function Cart() {
                                 disabled={loading}
                                 className="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Order'}
+                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : dictionary.cart.confirm}
                             </button>
                         )}
                     </div>

@@ -27,7 +27,15 @@
         "address": "عنوان التوصيل",
         "successTitle": "تم تأكيد الطلب!",
         "successMessage": "لقد تلقينا تفاصيل طلبك عبر واتساب.",
-        "continue": "متابعة التسوق"
+        "continue": "متابعة التسوق",
+        "shippingDetails": "تفاصيل الشحن",
+        "orderConfirmedHeader": "تم تأكيد الطلب",
+        "loadout": "سلتك",
+        "alerts": {
+            "placeOrderFail": "فشل في تقديم الطلب",
+            "timeout": "انتهت مهلة الطلب. يرجى التحقق من الاتصال.",
+            "unexpected": "حدث خطأ غير متوقع."
+        }
     },
     "footer": {
         "rights": "جميع الحقوق محفوظة."

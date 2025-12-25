@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { collection, query, orderBy, getDocs, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { Loader2, RefreshCw, Package, ShoppingCart, Trash2, Plus } from 'lucide-react';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { Loader2, RefreshCw, Package, ShoppingCart, Trash2, Plus, Upload } from 'lucide-react';
 
 export default function AdminPage() {
     const [activeTab, setActiveTab] = useState<'orders' | 'products'>('orders');
@@ -14,7 +15,8 @@ export default function AdminPage() {
     const [updating, setUpdating] = useState<string | null>(null);
 
     // Product Form State
-    const [newProduct, setNewProduct] = useState({ name: '', price: '', image: '/hero_background.png' });
+    const [newProduct, setNewProduct] = useState<{ name: string, price: string, image: string }>({ name: '', price: '', image: '' });
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [isAddingProduct, setIsAddingProduct] = useState(false);
 
     const checkPassword = (e: React.FormEvent) => {
@@ -34,7 +36,7 @@ export default function AdminPage() {
                 const querySnapshot = await getDocs(q);
                 setOrders(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             } else {
-                const q = query(collection(db, 'products')); // Add orderBy if you add a createdAt to products
+                const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
                 setProducts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             }
@@ -63,18 +65,35 @@ export default function AdminPage() {
         }
     };
 
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImageFile(e.target.files[0]);
+        }
+    };
+
     const handleAddProduct = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsAddingProduct(true);
         try {
+            let imageUrl = '/hero_background.png';
+
+            if (imageFile) {
+                const storageRef = ref(storage, `products/${Date.now()}-${imageFile.name}`);
+                await uploadBytes(storageRef, imageFile);
+                imageUrl = await getDownloadURL(storageRef);
+            } else if (newProduct.image) {
+                imageUrl = newProduct.image;
+            }
+
             await addDoc(collection(db, 'products'), {
                 name: newProduct.name,
                 price: parseFloat(newProduct.price),
-                image: newProduct.image,
+                image: imageUrl,
                 createdAt: serverTimestamp()
             });
-            setNewProduct({ name: '', price: '', image: '/hero_background.png' });
-            fetchData(); // Refresh list
+            setNewProduct({ name: '', price: '', image: '' });
+            setImageFile(null);
+            fetchData();
             alert('Product added successfully!');
         } catch (error) {
             console.error("Error adding product:", error);
@@ -84,9 +103,20 @@ export default function AdminPage() {
         }
     };
 
-    const deleteProduct = async (productId: string) => {
+    const deleteProduct = async (productId: string, imageUrl: string) => {
         if (!confirm('Are you sure you want to delete this product?')) return;
         try {
+            // Try to delete image from storage if it exists and is hosted on Firebase
+            if (imageUrl && imageUrl.includes('firebasestorage')) {
+                try {
+                    // Extract ref from URL or just try deleting
+                    const imageRef = ref(storage, imageUrl);
+                    await deleteObject(imageRef);
+                } catch (e) {
+                    console.warn("Could not delete image from storage (might be external URL)", e);
+                }
+            }
+
             await deleteDoc(doc(db, 'products', productId));
             setProducts(products.filter(p => p.id !== productId));
         } catch (error) {
@@ -234,20 +264,31 @@ export default function AdminPage() {
                                             />
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-sm text-gray-400 mb-1">Image URL</label>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    value={newProduct.image}
-                                                    onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                                                    className="w-full bg-black border border-gray-700 rounded-lg p-2 text-white focus:border-primary focus:outline-none"
-                                                    placeholder="https://..."
-                                                />
+                                            <label className="block text-sm text-gray-400 mb-1">Product Image</label>
+                                            <div className="flex gap-2 items-center">
+                                                <div className="relative flex-grow">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleImageSelect}
+                                                        className="hidden"
+                                                        id="image-upload"
+                                                    />
+                                                    <label
+                                                        htmlFor="image-upload"
+                                                        className="w-full bg-black border border-gray-700 rounded-lg p-2 text-white flex items-center gap-2 cursor-pointer hover:border-primary transition-colors"
+                                                    >
+                                                        <Upload className="w-4 h-4 text-primary" />
+                                                        <span className="text-sm text-gray-400 truncate">
+                                                            {imageFile ? imageFile.name : "Click to upload image"}
+                                                        </span>
+                                                    </label>
+                                                </div>
+
                                                 <button
                                                     type="submit"
                                                     disabled={isAddingProduct}
-                                                    className="bg-primary text-black font-bold px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+                                                    className="bg-primary text-black font-bold px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 shrink-0"
                                                 >
                                                     {isAddingProduct ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Add'}
                                                 </button>
@@ -263,7 +304,7 @@ export default function AdminPage() {
                                             <div className="relative h-48 bg-black">
                                                 <img src={product.image} alt={product.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                                                 <button
-                                                    onClick={() => deleteProduct(product.id)}
+                                                    onClick={() => deleteProduct(product.id, product.image)}
                                                     className="absolute top-2 right-2 p-2 bg-red-600/80 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
