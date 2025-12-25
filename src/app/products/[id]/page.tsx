@@ -78,20 +78,32 @@ export default function ProductPage() {
                             </div>
                         ) : (
                             <>
-                                <div>
-                                    <h1 className="text-4xl md:text-5xl font-bold mb-2 font-cairo">{product?.name}</h1>
-                                    <p className="text-2xl text-primary font-bold">${product?.price}</p>
+                                <div className="space-y-4">
+                                    <h1 className="text-4xl md:text-5xl font-black font-cairo tracking-tight text-white">{product?.name}</h1>
+                                    <div className="flex items-center gap-6">
+                                        <div className="px-4 py-2 bg-primary/10 rounded-xl border border-primary/20">
+                                            <p className="text-xs font-bold text-primary uppercase mb-1">Price USD</p>
+                                            <p className="text-3xl font-black text-white">${product?.price}</p>
+                                        </div>
+                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10">
+                                            <p className="text-xs font-bold text-gray-500 uppercase mb-1">Price IQD</p>
+                                            <p className="text-3xl font-black text-gray-300">{(product?.priceIQD || (product!.price * 1450)).toLocaleString()}</p>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <p className="text-gray-400 leading-relaxed text-lg">
-                                    {product?.description || "Experience precision and control with this premium gaming gear. Designed for esports professionals and enthusiasts alike."}
-                                </p>
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-bold text-white uppercase tracking-widest border-b border-white/5 pb-2">Technical Specifications</h3>
+                                    <p className="text-gray-400 leading-relaxed text-lg whitespace-pre-wrap">
+                                        {product?.description || "Experience precision and control with this premium gaming gear. Designed for esports professionals and enthusiasts alike. Optimized for maximum performance and durability in the most demanding environments."}
+                                    </p>
+                                </div>
 
                                 <button
                                     onClick={() => product && addToCart(product)}
-                                    className="bg-white text-black font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 hover:bg-primary hover:text-black transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                                    className="w-full bg-primary text-black font-black py-5 px-8 rounded-2xl flex items-center justify-center gap-4 hover:bg-cyan-400 transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(0,212,255,0.2)] active:scale-95 uppercase tracking-widest"
                                 >
-                                    <ShoppingCart className="w-5 h-5" />
+                                    <ShoppingCart className="w-6 h-6" />
                                     {dictionary.products.addToCart}
                                 </button>
                             </>

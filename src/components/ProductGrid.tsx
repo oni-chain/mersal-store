@@ -60,16 +60,19 @@ export default function ProductGrid() {
                                         loading="lazy"
                                     />
                                 </Link>
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors font-cairo">{product.name}</h3>
-                                        <span className="text-xl font-bold text-primary">${product.price}</span>
+                                <div className="p-6 space-y-4">
+                                    <div>
+                                        <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors font-cairo truncate">{product.name}</h3>
+                                        <div className="flex items-center gap-4 mt-2">
+                                            <span className="text-xl font-black text-primary">${product.price}</span>
+                                            <span className="text-sm font-bold text-gray-500 italic">| {(product.priceIQD || (product.price * 1450)).toLocaleString()} IQD</span>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={() => addToCart(product)}
-                                        className="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all duration-300 transform active:scale-95"
+                                        className="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all duration-300 transform active:scale-95 group/btn shadow-lg"
                                     >
-                                        <Plus className="w-5 h-5" /> {dictionary.products.addToCart}
+                                        <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.addToCart}
                                     </button>
                                 </div>
                             </div>
