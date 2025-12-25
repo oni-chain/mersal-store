@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "home": "Home",
+        "products": "Products",
+        "about": "About",
+        "cart": "Cart"
+    },
+    "hero": {
+        "title": "Mersal",
+        "subtitle": "Equip yourself with the best mousepad.",
+        "cta": "Shop Collection"
+    },
+    "products": {
+        "title": "ELITE ARSENAL",
+        "addToCart": "Add to Cart",
+        "outOfStock": "Out of Stock"
+    },
+    "cart": {
+        "title": "Your Loadout",
+        "empty": "Your cart is empty.",
+        "startShopping": "Start Shopping",
+        "total": "Total",
+        "checkout": "Proceed to Checkout",
+        "confirm": "Confirm Order",
+        "name": "Full Name",
+        "phone": "WhatsApp Phone Number",
+        "address": "Shipping Address",
+        "successTitle": "Order Confirmed!",
+        "successMessage": "We have received your order details via WhatsApp.",
+        "continue": "Continue Shopping"
+    },
+    "footer": {
+        "rights": "All rights reserved."
+    }
+}
