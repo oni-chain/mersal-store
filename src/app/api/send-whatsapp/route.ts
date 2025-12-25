@@ -88,9 +88,9 @@ ${itemsList}
 We will process it shortly.
         `.trim();
 
-        // Send messages in parallel, don't await strictly for response before returning success to UI
-        if (adminPhone) await sendWhatsApp(adminPhone, adminMsg);
-        if (phone) await sendWhatsApp(phone, customerMsg);
+        // Fire and forget WhatsApp messages to not block response
+        if (adminPhone) sendWhatsApp(adminPhone, adminMsg);
+        if (phone) sendWhatsApp(phone, customerMsg);
 
         return NextResponse.json({ success: true });
     } catch (error) {
