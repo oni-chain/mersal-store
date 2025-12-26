@@ -35,10 +35,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const dictionary = language === 'en' ? en : ar;
     const direction = language === 'en' ? 'ltr' : 'rtl';
 
-    // Update HTML dir attribute
+    // Update HTML dir attribute and font
     useEffect(() => {
         document.documentElement.dir = direction;
         document.documentElement.lang = language;
+
+        // Apply Cairo font for Arabic
+        if (language === 'ar') {
+            document.body.classList.add('font-cairo');
+        } else {
+            document.body.classList.remove('font-cairo');
+        }
     }, [direction, language]);
 
     return (

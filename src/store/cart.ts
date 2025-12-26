@@ -7,6 +7,7 @@ export interface Product {
     priceIQD?: number;
     image: string;
     description?: string;
+    minOrderQty?: number;
 }
 
 interface CartItem extends Product {
@@ -16,40 +17,73 @@ interface CartItem extends Product {
 interface CartState {
     items: CartItem[];
     isOpen: boolean;
-    addToCart: (product: Product) => void;
+    showAddToCartModal: boolean;
+    lastAddedProduct: Product | null;
+    addToCart: (product: Product, quantity?: number) => { success: boolean; error?: string };
     removeFromCart: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     clearCart: () => void;
-    toggleCart: () => void; // Open/Close cart drawer
+    toggleCart: () => void;
+    closeModal: () => void;
     getCartTotal: () => number;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
     items: [],
     isOpen: false,
-    addToCart: (product) => set((state) => {
-        const existingItem = state.items.find(item => item.id === product.id);
-        if (existingItem) {
+    showAddToCartModal: false,
+    lastAddedProduct: null,
+
+    addToCart: (product, quantity = 1) => {
+        const minQty = product.minOrderQty || 1;
+
+        // Validate MOQ
+        if (quantity < minQty) {
             return {
-                items: state.items.map(item =>
-                    item.id === product.id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                )
+                success: false,
+                error: `Minimum order quantity is ${minQty} units`
             };
         }
-        return { items: [...state.items, { ...product, quantity: 1 }] };
-    }),
+
+        set((state) => {
+            const existingItem = state.items.find(item => item.id === product.id);
+            if (existingItem) {
+                return {
+                    items: state.items.map(item =>
+                        item.id === product.id
+                            ? { ...item, quantity: item.quantity + quantity }
+                            : item
+                    ),
+                    showAddToCartModal: true,
+                    lastAddedProduct: product
+                };
+            }
+            return {
+                items: [...state.items, { ...product, quantity }],
+                showAddToCartModal: true,
+                lastAddedProduct: product
+            };
+        });
+
+        return { success: true };
+    },
+
     removeFromCart: (productId) => set((state) => ({
         items: state.items.filter(item => item.id !== productId)
     })),
+
     updateQuantity: (productId, quantity) => set((state) => ({
         items: state.items.map(item =>
             item.id === productId ? { ...item, quantity: Math.max(0, quantity) } : item
         ).filter(item => item.quantity > 0)
     })),
+
     clearCart: () => set({ items: [] }),
+
     toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+
+    closeModal: () => set({ showAddToCartModal: false, lastAddedProduct: null }),
+
     getCartTotal: () => {
         const { items } = get();
         return items.reduce((total, item) => total + item.price * item.quantity, 0);

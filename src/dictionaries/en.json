@@ -13,7 +13,11 @@
     "products": {
         "title": "ELITE ARSENAL",
         "addToCart": "Add to Cart",
-        "outOfStock": "Out of Stock"
+        "outOfStock": "Out of Stock",
+        "moq": "Minimum Order",
+        "moqError": "Minimum order quantity is {qty} units",
+        "moqBadge": "Min: {qty}",
+        "moqLabel": "MOQ"
     },
     "cart": {
         "title": "Your Loadout",
@@ -35,6 +39,11 @@
             "placeOrderFail": "Failed to place order",
             "timeout": "Request timed out. Please check your connection.",
             "unexpected": "An unexpected error occurred."
+        },
+        "modal": {
+            "added": "Added to Cart!",
+            "checkoutNow": "Checkout Now",
+            "continueShopping": "Continue Shopping"
         }
     },
     "footer": {

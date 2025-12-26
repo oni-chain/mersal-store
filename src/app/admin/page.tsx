@@ -23,7 +23,8 @@ export default function AdminPage() {
         description: '',
         priceUSD: '',
         priceIQD: '',
-        image_url: ''
+        image_url: '',
+        minOrderQty: '1'
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,6 +108,7 @@ export default function AdminPage() {
                 price: parseFloat(formData.priceUSD),
                 price_iqd: parseFloat(formData.priceIQD),
                 image_url: imageUrl,
+                min_order_qty: parseInt(formData.minOrderQty) || 1,
             };
 
             if (editingProduct) {
@@ -124,7 +126,7 @@ export default function AdminPage() {
 
             setIsFormOpen(false);
             setEditingProduct(null);
-            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '' });
+            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1' });
             setImageFile(null);
             fetchData();
             alert(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
@@ -143,7 +145,8 @@ export default function AdminPage() {
             description: product.description || '',
             priceUSD: product.price.toString(),
             priceIQD: (product.price_iqd || (product.price * EXCHANGE_RATE)).toString(),
-            image_url: product.image_url
+            image_url: product.image_url,
+            minOrderQty: (product.min_order_qty || 1).toString()
         });
         setIsFormOpen(true);
     };
@@ -335,7 +338,7 @@ export default function AdminPage() {
                                 <button
                                     onClick={() => {
                                         setEditingProduct(null);
-                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '' });
+                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1' });
                                         setIsFormOpen(true);
                                     }}
                                     className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-gray-500 hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2 group"
@@ -453,6 +456,20 @@ export default function AdminPage() {
                                                 className="w-full bg-black border border-white/10 rounded-xl p-3 text-primary font-bold focus:border-primary focus:outline-none transition-colors"
                                             />
                                         </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Minimum Order Quantity (MOQ)</label>
+                                        <input
+                                            required
+                                            type="number"
+                                            min="1"
+                                            value={formData.minOrderQty}
+                                            onChange={(e) => setFormData({ ...formData, minOrderQty: e.target.value })}
+                                            className="w-full bg-black border border-white/10 rounded-xl p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                            placeholder="1"
+                                        />
+                                        <p className="text-xs text-gray-600 mt-1">Minimum units customers must order</p>
                                     </div>
 
                                     <div>
