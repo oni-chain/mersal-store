@@ -128,9 +128,9 @@ export default function AdminPage() {
             setImageFile(null);
             fetchData();
             alert(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving product:", error);
-            alert('Failed to save product. Ensure table has RLS disabled or proper policies.');
+            alert(`Failed to save product: ${error.message || 'Unknown error'}. Check Supabase logs or RLS policies.`);
         } finally {
             setIsSubmitting(false);
         }
