@@ -96,15 +96,22 @@ export async function POST(request: Request) {
             }
         };
 
-        // Telegram Notification (Non-blocking / Fail-safe)
+        // Telegram Notification (Awaited for reliability on Vercel)
         const sendTelegramNotification = async () => {
             try {
                 const token = process.env.TELEGRAM_BOT_TOKEN;
                 const chatId = process.env.TELEGRAM_CHAT_ID;
 
+                console.log(`[Telegram Debug] Attempting to send to Chat ID: ${chatId}`);
+
                 if (!token || !chatId) {
-                    console.warn('[Order API] Telegram credentials missing, skipping notification');
+                    console.error('[Order API] Telegram credentials missing. BOT_TOKEN or CHAT_ID is null.');
                     return;
+                }
+
+                // Check for Bot ID vs Personal ID mismatch
+                if (token.startsWith(chatId)) {
+                    console.warn('[Order API] WARNING: The Chat ID matches the Bot ID. Bots cannot message themselves. Please use your personal Chat ID.');
                 }
 
                 const itemsList = items.map((item: any) =>
@@ -113,7 +120,7 @@ export async function POST(request: Request) {
 
                 const timestamp = new Date().toLocaleString('en-IQ', { timeZone: 'Asia/Baghdad' });
 
-                const message = `📦 <b>New Order Received!</b>
+                const message = `📦 <b>New Order Received - Mersal - مرسال</b>
 
 👤 <b>Customer Name:</b> ${customerName}
 📞 <b>Phone:</b> ${phone}
@@ -137,20 +144,22 @@ ${itemsList}
                     }),
                 });
 
+                const result = await response.json();
                 if (!response.ok) {
-                    const error = await response.json();
-                    console.error('[Order API] Telegram notification failed. Response:', JSON.stringify(error));
+                    console.error('[Order API] Telegram API Error:', JSON.stringify(result));
                 } else {
                     console.log('[Order API] Telegram notification sent successfully');
                 }
             } catch (error) {
-                console.error('[Order API] Telegram notification failed:', error);
+                console.error('[Order API] Telegram network/logic error:', error);
             }
         };
 
-        // Fire and forget notifications
-        sendEmail();
-        sendTelegramNotification();
+        // Execute notifications (await ensures Vercel doesn't kill the process early)
+        await Promise.all([
+            sendEmail(),
+            sendTelegramNotification()
+        ]);
 
         return NextResponse.json({ success: true });
     } catch (error) {
