@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 import { supabase } from '@/lib/supabase';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { customerName, phone, items, total, address } = body;
 
-        // Use process.env or hardcoded fallbacks from user
-        const instanceId = process.env.ULTRAMSG_INSTANCE_ID || 'instance157099';
-        const token = process.env.ULTRAMSG_TOKEN || 'vrrnaykbbdmfzbr0';
-        const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER || '+9647708511364';
+        const adminEmail = process.env.ADMIN_EMAIL || 'AliMainMail@proton.me';
 
-        console.log(`[WhatsApp API] Attempting to send order. Instance: ${instanceId}, Admin: ${adminPhone}`);
+        console.log(`[Email API] Processing order for ${customerName}`);
 
         // Save Order to Supabase (Critical Path)
         try {
@@ -27,63 +27,66 @@ export async function POST(request: Request) {
                 }]);
 
             if (dbError) throw dbError;
+            console.log('[Email API] Order saved to Supabase successfully');
         } catch (dbError) {
             console.error("CRITICAL: Error saving to Supabase:", dbError);
         }
 
-        // WhatsApp Notification (Non-blocking / Fail-safe)
-        const sendWhatsApp = async (to: string, text: string) => {
-            if (!to) return;
-            const url = `https://api.ultramsg.com/${instanceId}/messages/chat`;
-            const params = new URLSearchParams();
-            params.append('token', token);
-            params.append('to', to);
-            params.append('body', text);
-
+        // Email Notification (Non-blocking / Fail-safe)
+        const sendEmail = async () => {
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const itemsList = items.map((item: any) =>
+                    `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
+                ).join('\n');
 
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params.toString(),
-                    signal: controller.signal
+                const emailHtml = `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #00d4ff; border-bottom: 2px solid #00d4ff; padding-bottom: 10px;">
+                            🚨 New Order Received - Mersal
+                        </h2>
+                        
+                        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <h3 style="margin-top: 0;">Customer Information</h3>
+                            <p><strong>Name:</strong> ${customerName}</p>
+                            <p><strong>Phone:</strong> ${phone}</p>
+                            <p><strong>Address:</strong> ${address}</p>
+                        </div>
+
+                        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                            <h3 style="margin-top: 0;">Order Details</h3>
+                            <pre style="background: #f9f9f9; padding: 15px; border-radius: 4px; overflow-x: auto;">${itemsList}</pre>
+                            <h3 style="color: #00d4ff; text-align: right; margin-bottom: 0;">Total: $${total.toFixed(2)}</h3>
+                        </div>
+
+                        <p style="color: #666; font-size: 12px; margin-top: 30px;">
+                            This order has been saved to your Admin Dashboard. Log in to manage it.
+                        </p>
+                    </div>
+                `;
+
+                const { data, error } = await resend.emails.send({
+                    from: 'Mersal Orders <onboarding@resend.dev>',
+                    to: [adminEmail],
+                    subject: `🎮 New Order from ${customerName} - $${total.toFixed(2)}`,
+                    html: emailHtml,
                 });
-                clearTimeout(timeoutId);
 
-                const resText = await res.text();
-                console.log(`[WhatsApp API] Response from ${to}:`, res.status, resText);
-
-                if (!res.ok) {
-                    console.error(`WhatsApp API Error (${to}):`, res.status, resText);
+                if (error) {
+                    console.error('[Email API] Resend error:', error);
+                } else {
+                    console.log('[Email API] Email sent successfully:', data);
                 }
             } catch (error) {
-                console.error(`WhatsApp Network Error (${to}):`, error);
+                console.error('[Email API] Email sending failed:', error);
             }
         };
 
-        const itemsList = items.map((item: any) => `- ${item.name} (x${item.quantity}) - $${item.price * item.quantity}`).join('\n');
-
-        const adminMsg = `
-🚨 *New Order Received* 🚨
-
-👤 *Customer:* ${customerName}
-📞 *Phone:* ${phone}
-📍 *Address:* ${address}
-
-🛒 *Order Details:*
-${itemsList}
-
-💰 *Total:* $${total}
-        `.trim();
-
-        // Fire and forget WhatsApp messages
-        if (adminPhone) sendWhatsApp(adminPhone, adminMsg);
+        // Fire and forget email
+        sendEmail();
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('[Email API] Error:', error);
         return NextResponse.json({ success: true, warning: 'Internal logic error' });
     }
 }
