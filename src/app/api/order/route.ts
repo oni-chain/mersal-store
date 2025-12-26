@@ -108,24 +108,24 @@ export async function POST(request: Request) {
                 }
 
                 const itemsList = items.map((item: any) =>
-                    `• ${item.name} (x${item.quantity}) - ${item.unitPriceIQD.toLocaleString()} IQD`
+                    `• ${item.name} (x${item.quantity}) - <b>${item.unitPriceIQD.toLocaleString()} IQD</b>`
                 ).join('\n');
 
                 const timestamp = new Date().toLocaleString('en-IQ', { timeZone: 'Asia/Baghdad' });
 
-                const message = `📦 *New Order Received!*
+                const message = `📦 <b>New Order Received!</b>
 
-👤 *Customer Name:* ${customerName}
-📞 *Phone:* ${phone}
-📍 *Address:* ${address}
+👤 <b>Customer Name:</b> ${customerName}
+📞 <b>Phone:</b> ${phone}
+📍 <b>Address:</b> ${address}
 
 --------------------------
-🛒 *Products:*
+🛒 <b>Products:</b>
 ${itemsList}
 --------------------------
 
-💰 *Total Price:* $${totalUSD.toFixed(2)} / ${total.toLocaleString()} IQD
-🕒 *Order Time:* ${timestamp}`;
+💰 <b>Total Price:</b> $${totalUSD.toFixed(2)} / <b>${total.toLocaleString()} IQD</b>
+🕒 <b>Order Time:</b> ${timestamp}`;
 
                 const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
                     method: 'POST',
@@ -133,13 +133,13 @@ ${itemsList}
                     body: JSON.stringify({
                         chat_id: chatId,
                         text: message,
-                        parse_mode: 'Markdown',
+                        parse_mode: 'HTML',
                     }),
                 });
 
                 if (!response.ok) {
                     const error = await response.json();
-                    console.error('[Order API] Telegram notification failed:', error);
+                    console.error('[Order API] Telegram notification failed. Response:', JSON.stringify(error));
                 } else {
                     console.log('[Order API] Telegram notification sent successfully');
                 }
