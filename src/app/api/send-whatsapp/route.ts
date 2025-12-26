@@ -7,9 +7,11 @@ export async function POST(request: Request) {
         const { customerName, phone, items, total, address } = body;
 
         // Use process.env
-        const instanceId = process.env.ULTRAMSG_INSTANCE_ID || 'instance157099';
-        const token = process.env.ULTRAMSG_TOKEN || 'vrrnaykbbdmfzbr0';
+        const instanceId = process.env.ULTRAMSG_INSTANCE_ID;
+        const token = process.env.ULTRAMSG_TOKEN;
         const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER;
+
+        console.log(`[WhatsApp API] Attempting to send order. Instance: ${instanceId ? 'SET' : 'MISSING'}, Token: ${token ? 'SET' : 'MISSING'}, AdminPhone: ${adminPhone || 'MISSING'}`);
 
         // Save Order to Supabase (Critical Path)
         try {
@@ -46,6 +48,9 @@ export async function POST(request: Request) {
                     signal: controller.signal
                 });
                 clearTimeout(timeoutId);
+
+                const resData = await res.json();
+                console.log(`[WhatsApp API] Response from ${to}:`, res.status, resData);
 
                 if (!res.ok) {
                     const errorText = await res.text();
