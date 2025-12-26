@@ -17,7 +17,18 @@
         "moq": "الحد الأدنى للطلب",
         "moqError": "الحد الأدنى للطلب هو {qty} وحدة",
         "moqBadge": "الحد الأدنى: {qty}",
-        "moqLabel": "الحد الأدنى"
+        "moqLabel": "الحد الأدنى",
+        "priceIQD": "سعر الوحدة (د.ع)",
+        "priceUSD": "السعر بالدولار",
+        "totalAmount": "المجموع الكلي",
+        "selectQuantity": "اختر الكمية",
+        "bulkDiscount": "خصم الكمية",
+        "wholesale": "سعر الجملة",
+        "buyMoreSaveMore": "اشترِ أكثر، ووفر أكثر!",
+        "pricePerUnit": "سعر الوحدة",
+        "quantity": "الكمية",
+        "savings": "توفير",
+        "bulkSavings": "توفير الجملة"
     },
     "cart": {
         "title": "سلتك",
@@ -35,6 +46,10 @@
         "shippingDetails": "تفاصيل الشحن",
         "orderConfirmedHeader": "تم تأكيد الطلب",
         "loadout": "سلتك",
+        "namePlaceholder": "الاسم الكامل",
+        "phonePlaceholder": "رقم الهاتف (الواتساب)",
+        "addressPlaceholder": "أدخل عنوان الشحن الكامل هنا...",
+        "orderTotal": "إجمالي الطلب",
         "alerts": {
             "placeOrderFail": "فشل في تقديم الطلب",
             "timeout": "انتهت مهلة الطلب. يرجى التحقق من الاتصال.",
@@ -43,7 +58,8 @@
         "modal": {
             "added": "تمت الإضافة إلى السلة!",
             "checkoutNow": "إتمام الشراء",
-            "continueShopping": "إكمال التسوق"
+            "continueShopping": "إكمال التسوق",
+            "synchronized": "تمت المزامنة مع السلة"
         }
     },
     "footer": {

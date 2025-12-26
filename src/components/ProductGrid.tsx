@@ -23,7 +23,8 @@ const fetchProducts = async (): Promise<Product[]> => {
         price: p.price,
         priceIQD: p.price_iqd,
         image: p.image_url,
-        description: p.description
+        description: p.description,
+        minOrderQty: p.min_order_qty
     }));
 };
 
@@ -71,12 +72,25 @@ export default function ProductGrid() {
                                     <div>
                                         <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors font-cairo truncate">{product.name}</h3>
                                         <div className="flex items-center gap-4 mt-2">
-                                            <span className="text-xl font-black text-primary">${product.price}</span>
-                                            <span className="text-sm font-bold text-gray-500 italic">| {(product.priceIQD || (product.price * 1450)).toLocaleString()} IQD</span>
+                                            <span className="text-xl font-black text-primary">{(product.priceIQD || (product.price * 1450)).toLocaleString()} IQD</span>
+                                            <span className="text-sm font-bold text-gray-500 italic">| ${product.price}</span>
                                         </div>
                                     </div>
+                                    {product.minOrderQty && product.minOrderQty > 1 && (
+                                        <div className="absolute top-4 left-4 z-10 px-3 py-1.5 bg-primary/20 backdrop-blur-md border border-primary/30 rounded-xl flex items-center gap-2 shadow-[0_0_15px_rgba(0,212,255,0.1)]">
+                                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                                            <span className="text-[10px] font-black text-primary uppercase tracking-widest font-cairo">
+                                                {dictionary.products.moqBadge.replace('{qty}', product.minOrderQty.toString())}
+                                            </span>
+                                        </div>
+                                    )}
                                     <button
-                                        onClick={() => addToCart(product)}
+                                        onClick={() => {
+                                            const result = addToCart(product, product.minOrderQty || 1);
+                                            if (!result.success && result.error) {
+                                                alert(result.error);
+                                            }
+                                        }}
                                         className="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all duration-300 transform active:scale-95 group/btn shadow-lg"
                                     >
                                         <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.addToCart}

@@ -11,6 +11,7 @@ interface LanguageContextType {
     dictionary: Dictionary;
     toggleLanguage: () => void;
     direction: 'ltr' | 'rtl';
+    t: (key: string, params?: Record<string, any>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -35,6 +36,29 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const dictionary = language === 'en' ? en : ar;
     const direction = language === 'en' ? 'ltr' : 'rtl';
 
+    const t = (key: string, params?: Record<string, any>): string => {
+        const keys = key.split('.');
+        let value: any = dictionary;
+
+        for (const k of keys) {
+            if (value && typeof value === 'object' && k in value) {
+                value = value[k];
+            } else {
+                return key; // Fallback to key if not found
+            }
+        }
+
+        if (typeof value !== 'string') return key;
+
+        if (params) {
+            Object.keys(params).forEach(param => {
+                value = value.replace(`{${param}}`, params[param]);
+            });
+        }
+
+        return value;
+    };
+
     // Update HTML dir attribute and font
     useEffect(() => {
         document.documentElement.dir = direction;
@@ -49,7 +73,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }, [direction, language]);
 
     return (
-        <LanguageContext.Provider value={{ language, dictionary, toggleLanguage, direction }}>
+        <LanguageContext.Provider value={{ language, dictionary, toggleLanguage, direction, t }}>
             {children}
         </LanguageContext.Provider>
     );

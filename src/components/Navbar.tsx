@@ -8,7 +8,7 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { items, toggleCart } = useCartStore();
-    const { dictionary, toggleLanguage, language } = useLanguage();
+    const { t, toggleLanguage, language } = useLanguage();
     const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0 cursor-pointer">
                         <span className="text-3xl font-bold tracking-tighter text-white font-cairo">
-                            {language === 'en' ? 'Mersal' : 'مرسال'}<span className="text-secondary">.</span>
+                            {t('hero.title')}<span className="text-secondary">.</span>
                         </span>
                     </div>
 
@@ -66,7 +66,7 @@ export default function Navbar() {
                 <div className="flex flex-col space-y-4 font-bold text-center">
                     {/* Links removed as requested */}
                     <button onClick={toggleCart} className="py-2 text-red-600 uppercase tracking-widest text-sm border border-red-900 rounded-lg bg-red-900/10">
-                        {dictionary.nav.cart} ({itemCount})
+                        {t('nav.cart')} ({itemCount})
                     </button>
                 </div>
             </div>

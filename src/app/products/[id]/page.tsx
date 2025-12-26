@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
 import { supabase } from '@/lib/supabase';
-import { useCartStore, Product } from '@/store/cart';
+import { useCartStore, Product, getPriceAtQuantity } from '@/store/cart';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ArrowLeft, ShoppingCart, Loader2 } from 'lucide-react';
@@ -27,7 +27,9 @@ const fetchProduct = async (id: string): Promise<Product> => {
         price: data.price,
         priceIQD: data.price_iqd,
         image: data.image_url,
-        description: data.description
+        description: data.description,
+        minOrderQty: data.min_order_qty,
+        priceTiers: data.price_tiers
     };
 };
 
@@ -39,7 +41,31 @@ export default function ProductPage() {
     });
 
     const addToCart = useCartStore((state) => state.addToCart);
-    const { dictionary, language } = useLanguage();
+    const { t, language } = useLanguage();
+    const [quantity, setQuantity] = React.useState(1);
+    const [isPulsing, setIsPulsing] = React.useState(false);
+
+    React.useEffect(() => {
+        if (product?.minOrderQty) {
+            setQuantity(product.minOrderQty);
+        }
+    }, [product]);
+
+    const unitPriceIQD = product ? getPriceAtQuantity(product, quantity) : 0;
+    const totalPriceIQD = unitPriceIQD * quantity;
+    const unitPriceUSD = unitPriceIQD / 1450;
+
+    // Trigger pulse when unit price changes (tier hit)
+    React.useEffect(() => {
+        if (unitPriceIQD > 0) {
+            setIsPulsing(true);
+            const timer = setTimeout(() => setIsPulsing(false), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [unitPriceIQD]);
+
+    const activeTier = product?.priceTiers?.find(tier => quantity >= tier.min_qty);
+    const nextTier = product?.priceTiers?.sort((a, b) => a.min_qty - b.min_qty).find(tier => tier.min_qty > quantity);
 
     if (error) return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center font-cairo">
@@ -56,11 +82,11 @@ export default function ProductPage() {
             <div className="max-w-7xl mx-auto px-4 py-32">
                 <Link href="/" className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors">
                     <ArrowLeft className={`w-4 h-4 ${language === 'ar' ? 'rotate-180 ml-2' : 'mr-2'}`} />
-                    {dictionary.cart.continue}
+                    {t('cart.continue')}
                 </Link>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5">
+                    <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
                         {isLoading ? (
                             <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
                                 <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
@@ -74,9 +100,14 @@ export default function ProductPage() {
                                 className="object-cover"
                             />
                         )}
+                        {activeTier && (
+                            <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.5)] animate-bounce text-sm">
+                                {t('products.bulkDiscount')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}% {t('products.savings')}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="flex flex-col justify-center space-y-6">
+                    <div className="flex flex-col justify-center space-y-8">
                         {isLoading ? (
                             <div className="space-y-4 animate-pulse">
                                 <div className="h-10 bg-white/5 rounded w-3/4" />
@@ -90,34 +121,116 @@ export default function ProductPage() {
                             </div>
                         ) : (
                             <>
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <h1 className="text-4xl md:text-5xl font-black font-cairo tracking-tight text-white">{product?.name}</h1>
-                                    <div className="flex items-center gap-6">
-                                        <div className="px-4 py-2 bg-primary/10 rounded-xl border border-primary/20">
-                                            <p className="text-xs font-bold text-primary uppercase mb-1">Price USD</p>
-                                            <p className="text-3xl font-black text-white">${product?.price}</p>
+
+                                    <div className="flex flex-col gap-6">
+                                        <div className="flex items-center gap-6">
+                                            <div className={`px-8 py-6 rounded-2xl border transition-all duration-300 ${activeTier ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
+                                                <p className={`text-xs font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-red-500' : 'text-primary'}`}>
+                                                    {activeTier ? t('products.wholesale') : t('products.priceIQD')}
+                                                </p>
+                                                <p className={`text-5xl font-black transition-all duration-300 ${isPulsing ? 'scale-110' : 'scale-100'} ${activeTier ? 'text-red-500' : 'text-white'}`}>
+                                                    {unitPriceIQD.toLocaleString()} <span className="text-sm font-bold opacity-70">IQD</span>
+                                                </p>
+                                            </div>
+                                            <div className="px-6 py-3 bg-white/5 rounded-xl border border-white/10">
+                                                <p className="text-xs font-bold text-gray-500 uppercase mb-1">{t('products.priceUSD')}</p>
+                                                <p className="text-2xl font-black text-gray-400">${unitPriceUSD.toFixed(2)}</p>
+                                            </div>
                                         </div>
-                                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10">
-                                            <p className="text-xs font-bold text-gray-500 uppercase mb-1">Price IQD</p>
-                                            <p className="text-3xl font-black text-gray-300">{(product?.priceIQD || (product!.price * 1450)).toLocaleString()}</p>
-                                        </div>
+
+                                        {/* Bulk Savings Section */}
+                                        {product?.priceTiers && product.priceTiers.length > 0 && (
+                                            <div className="bg-gray-900/50 rounded-3xl border border-white/5 overflow-hidden">
+                                                <div className="bg-white/5 px-6 py-3 border-b border-white/5 flex justify-between items-center">
+                                                    <span className="text-xs font-black uppercase text-primary tracking-widest">{t('products.bulkSavings')}</span>
+                                                    <span className="text-[10px] text-gray-500 font-bold uppercase">{t('products.buyMoreSaveMore')}</span>
+                                                </div>
+                                                <div className="p-4 grid grid-cols-1 gap-2">
+                                                    {product.priceTiers.map((tier, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className={`flex items-center justify-between px-6 py-4 rounded-xl border transition-all ${quantity >= tier.min_qty ? 'bg-red-500/20 border-red-500 text-red-500 scale-[1.02] shadow-lg' : 'bg-white/2 border-white/5 text-gray-400 opacity-60'}`}
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <span className="text-lg font-black">{tier.min_qty}+ {t('products.quantity')}</span>
+                                                                <span className="text-[10px] font-bold uppercase opacity-60">{t('products.wholesale')}</span>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <span className="text-2xl font-black">{tier.price_iqd.toLocaleString()}</span>
+                                                                <span className="ml-1 text-xs font-bold">IQD</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-bold text-white uppercase tracking-widest border-b border-white/5 pb-2">Technical Specifications</h3>
                                     <p className="text-gray-400 leading-relaxed text-lg whitespace-pre-wrap">
-                                        {product?.description || "Experience precision and control with this premium gaming gear. Designed for esports professionals and enthusiasts alike. Optimized for maximum performance and durability in the most demanding environments."}
+                                        {product?.description}
                                     </p>
                                 </div>
 
-                                <button
-                                    onClick={() => product && addToCart(product)}
-                                    className="w-full bg-primary text-black font-black py-5 px-8 rounded-2xl flex items-center justify-center gap-4 hover:bg-cyan-400 transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(0,212,255,0.2)] active:scale-95 uppercase tracking-widest"
-                                >
-                                    <ShoppingCart className="w-6 h-6" />
-                                    {dictionary.products.addToCart}
-                                </button>
+                                <div className="space-y-6 pt-6 border-t border-white/5">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center justify-between text-gray-400 font-bold uppercase text-xs tracking-widest px-2">
+                                            <span>{t('products.selectQuantity')}</span>
+                                            {nextTier ? (
+                                                <span className="text-primary italic">
+                                                    {t('products.buyMoreSaveMore')} ({nextTier.min_qty - quantity} more for {nextTier.price_iqd.toLocaleString()} IQD)
+                                                </span>
+                                            ) : (
+                                                <span>{t('products.moqBadge', { qty: product?.minOrderQty || 1 })}</span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-2 gap-4">
+                                                <button
+                                                    onClick={() => setQuantity(Math.max(product?.minOrderQty || 1, quantity - 1))}
+                                                    className="w-14 h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-3xl font-black transition-colors"
+                                                >-</button>
+                                                <input
+                                                    type="number"
+                                                    value={quantity}
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        if (!isNaN(val)) setQuantity(Math.max(1, val));
+                                                    }}
+                                                    onBlur={() => setQuantity(Math.max(product?.minOrderQty || 1, quantity))}
+                                                    className="w-24 bg-transparent text-center text-3xl font-black focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                />
+                                                <button
+                                                    onClick={() => setQuantity(quantity + 1)}
+                                                    className="w-14 h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-3xl font-black transition-colors"
+                                                >+</button>
+                                            </div>
+                                            <div className={`flex-1 px-8 py-4 rounded-2xl border flex flex-col justify-center transition-all duration-300 ${activeTier ? 'bg-red-500/10 border-red-500/30' : 'bg-primary/5 border-primary/10'}`}>
+                                                <p className={`text-[10px] font-black uppercase tracking-widest ${activeTier ? 'text-red-500' : 'text-gray-500'}`}>{t('products.totalAmount')}</p>
+                                                <p className={`text-3xl font-black ${activeTier ? 'text-red-500' : 'text-primary'}`}>{totalPriceIQD.toLocaleString()} <span className="text-sm">IQD</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => {
+                                            if (product) {
+                                                const result = addToCart(product, quantity);
+                                                if (!result.success && result.error) {
+                                                    alert(result.error);
+                                                }
+                                            }
+                                        }}
+                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${activeTier ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20'}`}
+                                    >
+                                        <ShoppingCart className="w-6 h-6" />
+                                        {t('products.addToCart')}
+                                    </button>
+                                </div>
                             </>
                         )}
                     </div>

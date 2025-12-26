@@ -17,7 +17,18 @@
         "moq": "Minimum Order",
         "moqError": "Minimum order quantity is {qty} units",
         "moqBadge": "Min: {qty}",
-        "moqLabel": "MOQ"
+        "moqLabel": "MOQ",
+        "priceIQD": "Unit Price (IQD)",
+        "priceUSD": "Price (USD)",
+        "totalAmount": "Total Amount",
+        "selectQuantity": "Select Quantity",
+        "bulkDiscount": "Bulk Discount",
+        "wholesale": "Wholesale Price",
+        "buyMoreSaveMore": "Buy More, Save More!",
+        "pricePerUnit": "Price per unit",
+        "quantity": "Quantity",
+        "savings": "Savings",
+        "bulkSavings": "Bulk Savings"
     },
     "cart": {
         "title": "Your Loadout",
@@ -35,6 +46,10 @@
         "shippingDetails": "Shipping Details",
         "orderConfirmedHeader": "Order Confirmed",
         "loadout": "Your Loadout",
+        "namePlaceholder": "Your Full Name",
+        "phonePlaceholder": "WhatsApp Phone Number",
+        "addressPlaceholder": "Enter your full shipping address...",
+        "orderTotal": "Order Total",
         "alerts": {
             "placeOrderFail": "Failed to place order",
             "timeout": "Request timed out. Please check your connection.",
@@ -43,7 +58,8 @@
         "modal": {
             "added": "Added to Cart!",
             "checkoutNow": "Checkout Now",
-            "continueShopping": "Continue Shopping"
+            "continueShopping": "Continue Shopping",
+            "synchronized": "Synchronized to Loadout"
         }
     },
     "footer": {

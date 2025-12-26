@@ -8,6 +8,7 @@ export interface Product {
     image: string;
     description?: string;
     minOrderQty?: number;
+    priceTiers?: { min_qty: number; price_iqd: number }[];
 }
 
 interface CartItem extends Product {
@@ -26,7 +27,20 @@ interface CartState {
     toggleCart: () => void;
     closeModal: () => void;
     getCartTotal: () => number;
+    getCartTotalIQD: () => number;
 }
+
+export const getPriceAtQuantity = (product: Product, quantity: number) => {
+    if (!product.priceTiers || product.priceTiers.length === 0) {
+        return product.priceIQD || (product.price * 1450);
+    }
+
+    // Sort tiers by qty descending to find the highest applicable tier
+    const sortedTiers = [...product.priceTiers].sort((a, b) => b.min_qty - a.min_qty);
+    const applicableTier = sortedTiers.find(tier => quantity >= tier.min_qty);
+
+    return applicableTier ? applicableTier.price_iqd : (product.priceIQD || (product.price * 1450));
+};
 
 export const useCartStore = create<CartState>((set, get) => ({
     items: [],
@@ -86,6 +100,17 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     getCartTotal: () => {
         const { items } = get();
-        return items.reduce((total, item) => total + item.price * item.quantity, 0);
+        return items.reduce((total, item) => {
+            const unitPrice = getPriceAtQuantity(item, item.quantity) / 1450;
+            return total + unitPrice * item.quantity;
+        }, 0);
+    },
+
+    getCartTotalIQD: () => {
+        const { items } = get();
+        return items.reduce((total, item) => {
+            const unitPrice = getPriceAtQuantity(item, item.quantity);
+            return total + unitPrice * item.quantity;
+        }, 0);
     }
 }));

@@ -19,9 +19,16 @@ body {
 [lang="ar"],
 [dir="rtl"],
 .font-cairo {
-  font-family: var(--font-cairo), 'Traditional Arabic', 'Arabic Typesetting', Arial, sans-serif;
-  line-height: 1.8;
-  letter-spacing: 0.01em;
+  font-family: var(--font-cairo), 'Cairo', sans-serif;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+.glass-morphism {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Ensure smooth Arabic text rendering */

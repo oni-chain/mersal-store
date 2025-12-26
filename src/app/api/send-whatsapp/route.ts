@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { customerName, phone, items, total, address } = body;
+        const { customerName, phone, items, total, totalUSD, address } = body;
 
         const adminEmail = process.env.ADMIN_EMAIL || 'AliMainMail@proton.me';
 
@@ -22,7 +22,8 @@ export async function POST(request: Request) {
                     phone: phone,
                     address: address,
                     items: items,
-                    total: total,
+                    total: total, // IQD Total
+                    total_usd: totalUSD, // Add if column exists, or store in JSON
                     status: 'pending'
                 }]);
 
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
         const sendEmail = async () => {
             try {
                 const itemsList = items.map((item: any) =>
-                    `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
+                    `${item.name} (x${item.quantity}) - ${item.unitPriceIQD.toLocaleString()} IQD ($${item.unitPriceUSD.toFixed(2)})`
                 ).join('\n');
 
                 const emailHtml = `
@@ -55,7 +56,10 @@ export async function POST(request: Request) {
                         <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                             <h3 style="margin-top: 0;">Order Details</h3>
                             <pre style="background: #f9f9f9; padding: 15px; border-radius: 4px; overflow-x: auto;">${itemsList}</pre>
-                            <h3 style="color: #00d4ff; text-align: right; margin-bottom: 0;">Total: $${total.toFixed(2)}</h3>
+                            <div style="text-align: right; margin-top: 20px;">
+                                <h2 style="color: #00d4ff; margin: 0;">Total IQD: ${total.toLocaleString()} د.ع</h2>
+                                <h3 style="color: #666; margin: 5px 0 0 0;">Total USD: $${totalUSD.toFixed(2)}</h3>
+                            </div>
                         </div>
 
                         <p style="color: #666; font-size: 12px; margin-top: 30px;">
@@ -67,7 +71,7 @@ export async function POST(request: Request) {
                 const { data, error } = await resend.emails.send({
                     from: 'Mersal Orders <onboarding@resend.dev>',
                     to: [adminEmail],
-                    subject: `🎮 New Order from ${customerName} - $${total.toFixed(2)}`,
+                    subject: `🎮 New Order: ${customerName} - ${total.toLocaleString()} IQD`,
                     html: emailHtml,
                 });
 

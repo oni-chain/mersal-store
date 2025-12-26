@@ -24,7 +24,8 @@ export default function AdminPage() {
         priceUSD: '',
         priceIQD: '',
         image_url: '',
-        minOrderQty: '1'
+        minOrderQty: '1',
+        priceTiers: [] as { min_qty: number; price_iqd: number }[]
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,12 +73,21 @@ export default function AdminPage() {
         }
     }, [isAuthenticated, activeTab]);
 
+    const handlePriceIQDChange = (val: string) => {
+        const iqd = parseFloat(val) || 0;
+        setFormData({
+            ...formData,
+            priceIQD: val,
+            priceUSD: (iqd / EXCHANGE_RATE).toFixed(2)
+        });
+    };
+
     const handlePriceUSDChange = (val: string) => {
         const usd = parseFloat(val) || 0;
         setFormData({
             ...formData,
             priceUSD: val,
-            priceIQD: (usd * EXCHANGE_RATE).toString()
+            priceIQD: Math.round(usd * EXCHANGE_RATE).toString()
         });
     };
 
@@ -109,6 +119,7 @@ export default function AdminPage() {
                 price_iqd: parseFloat(formData.priceIQD),
                 image_url: imageUrl,
                 min_order_qty: parseInt(formData.minOrderQty) || 1,
+                price_tiers: formData.priceTiers,
             };
 
             if (editingProduct) {
@@ -126,7 +137,7 @@ export default function AdminPage() {
 
             setIsFormOpen(false);
             setEditingProduct(null);
-            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1' });
+            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', priceTiers: [] });
             setImageFile(null);
             fetchData();
             alert(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
@@ -146,7 +157,8 @@ export default function AdminPage() {
             priceUSD: product.price.toString(),
             priceIQD: (product.price_iqd || (product.price * EXCHANGE_RATE)).toString(),
             image_url: product.image_url,
-            minOrderQty: (product.min_order_qty || 1).toString()
+            minOrderQty: (product.min_order_qty || 1).toString(),
+            priceTiers: product.price_tiers || []
         });
         setIsFormOpen(true);
     };
@@ -338,7 +350,7 @@ export default function AdminPage() {
                                 <button
                                     onClick={() => {
                                         setEditingProduct(null);
-                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1' });
+                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', priceTiers: [] });
                                         setIsFormOpen(true);
                                     }}
                                     className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-gray-500 hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2 group"
@@ -433,9 +445,20 @@ export default function AdminPage() {
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Price (IQD)</label>
+                                            <input
+                                                required
+                                                type="number"
+                                                value={formData.priceIQD}
+                                                onChange={(e) => handlePriceIQDChange(e.target.value)}
+                                                className="w-full bg-black border border-white/10 rounded-xl p-3 text-primary font-bold focus:border-primary focus:outline-none transition-colors"
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                        <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Price (USD)</label>
                                             <div className="relative">
-                                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+                                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                                 <input
                                                     required
                                                     type="number"
@@ -446,16 +469,67 @@ export default function AdminPage() {
                                                 />
                                             </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Price (IQD)</label>
-                                            <input
-                                                required
-                                                type="number"
-                                                value={formData.priceIQD}
-                                                onChange={(e) => setFormData({ ...formData, priceIQD: e.target.value })}
-                                                className="w-full bg-black border border-white/10 rounded-xl p-3 text-primary font-bold focus:border-primary focus:outline-none transition-colors"
-                                            />
+                                    </div>
+
+                                    {/* Tiered Pricing Section */}
+                                    <div className="space-y-4 pt-4 border-t border-white/5">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-xs font-bold text-gray-500 uppercase">Tiered Pricing (Wholesale)</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({
+                                                    ...formData,
+                                                    priceTiers: [...formData.priceTiers, { min_qty: 0, price_iqd: 0 }]
+                                                })}
+                                                className="text-xs font-bold text-primary hover:text-cyan-400 transition-colors flex items-center gap-1"
+                                            >
+                                                <Plus className="w-3 h-3" /> Add Tier
+                                            </button>
                                         </div>
+
+                                        {formData.priceTiers.map((tier, index) => (
+                                            <div key={index} className="grid grid-cols-7 gap-2 items-center animate-in slide-in-from-top-1 duration-200">
+                                                <div className="col-span-3">
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Min Qty"
+                                                        value={tier.min_qty}
+                                                        onChange={(e) => {
+                                                            const newTiers = [...formData.priceTiers];
+                                                            newTiers[index].min_qty = parseInt(e.target.value) || 0;
+                                                            setFormData({ ...formData, priceTiers: newTiers });
+                                                        }}
+                                                        className="w-full bg-black border border-white/5 rounded-lg p-2 text-xs text-white focus:border-primary outline-none"
+                                                    />
+                                                </div>
+                                                <div className="col-span-3">
+                                                    <input
+                                                        type="number"
+                                                        placeholder="IQD Price"
+                                                        value={tier.price_iqd}
+                                                        onChange={(e) => {
+                                                            const newTiers = [...formData.priceTiers];
+                                                            newTiers[index].price_iqd = parseInt(e.target.value) || 0;
+                                                            setFormData({ ...formData, priceTiers: newTiers });
+                                                        }}
+                                                        className="w-full bg-black border border-white/5 rounded-lg p-2 text-xs text-primary font-bold focus:border-primary outline-none"
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newTiers = formData.priceTiers.filter((_, i) => i !== index);
+                                                        setFormData({ ...formData, priceTiers: newTiers });
+                                                    }}
+                                                    className="col-span-1 flex justify-center text-gray-600 hover:text-red-500 transition-colors"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {formData.priceTiers.length === 0 && (
+                                            <p className="text-[10px] text-gray-700 italic">No wholesale tiers defined.</p>
+                                        )}
                                     </div>
 
                                     <div>
