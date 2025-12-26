@@ -349,13 +349,19 @@ export default function AdminPage() {
                                         <div key={product.id} className="group bg-gray-900 rounded-3xl overflow-hidden border border-white/5 shadow-lg hover:border-primary/30 transition-all flex flex-col">
                                             <div className="relative h-56 bg-black p-2">
                                                 {product.image_url ? (
-                                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity" />
+                                                    <a href={product.image_url} target="_blank" rel="noopener noreferrer" className="block w-full h-full group/img relative">
+                                                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover rounded-2xl opacity-80 group-hover/img:opacity-100 transition-opacity" />
+                                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/40 rounded-2xl">
+                                                            <Globe className="w-8 h-8 text-white" />
+                                                            <span className="ml-2 text-xs font-bold text-white uppercase tracking-widest">Verify Public Link</span>
+                                                        </div>
+                                                    </a>
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center bg-white/5 rounded-2xl">
                                                         <Package className="w-12 h-12 text-gray-700" />
                                                     </div>
                                                 )}
-                                                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                                     <button onClick={() => openEditForm(product)} className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:text-primary"><Edit className="w-4 h-4" /></button>
                                                     <button onClick={() => deleteProduct(product)} className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-white hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                                                 </div>
