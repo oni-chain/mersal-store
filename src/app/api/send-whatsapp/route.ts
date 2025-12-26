@@ -6,12 +6,12 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { customerName, phone, items, total, address } = body;
 
-        // Use process.env
-        const instanceId = process.env.ULTRAMSG_INSTANCE_ID;
-        const token = process.env.ULTRAMSG_TOKEN;
-        const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER;
+        // Use process.env or hardcoded fallbacks from user
+        const instanceId = process.env.ULTRAMSG_INSTANCE_ID || 'instance157099';
+        const token = process.env.ULTRAMSG_TOKEN || 'vrrnaykbbdmfzbr0';
+        const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER || '+9647708511364';
 
-        console.log(`[WhatsApp API] Attempting to send order. Instance: ${instanceId ? 'SET' : 'MISSING'}, Token: ${token ? 'SET' : 'MISSING'}, AdminPhone: ${adminPhone || 'MISSING'}`);
+        console.log(`[WhatsApp API] Attempting to send order. Instance: ${instanceId}, Admin: ${adminPhone}`);
 
         // Save Order to Supabase (Critical Path)
         try {
@@ -35,26 +35,28 @@ export async function POST(request: Request) {
         const sendWhatsApp = async (to: string, text: string) => {
             if (!to) return;
             const url = `https://api.ultramsg.com/${instanceId}/messages/chat`;
-            const payload = { token, to, body: text };
+            const params = new URLSearchParams();
+            params.append('token', token);
+            params.append('to', to);
+            params.append('body', text);
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
                 const res = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString(),
                     signal: controller.signal
                 });
                 clearTimeout(timeoutId);
 
-                const resData = await res.json();
-                console.log(`[WhatsApp API] Response from ${to}:`, res.status, resData);
+                const resText = await res.text();
+                console.log(`[WhatsApp API] Response from ${to}:`, res.status, resText);
 
                 if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error(`WhatsApp API Error (${to}):`, res.status, errorText);
+                    console.error(`WhatsApp API Error (${to}):`, res.status, resText);
                 }
             } catch (error) {
                 console.error(`WhatsApp Network Error (${to}):`, error);
