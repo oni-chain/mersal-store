@@ -96,8 +96,61 @@ export async function POST(request: Request) {
             }
         };
 
-        // Fire and forget email
+        // Telegram Notification (Non-blocking / Fail-safe)
+        const sendTelegramNotification = async () => {
+            try {
+                const token = process.env.TELEGRAM_BOT_TOKEN;
+                const chatId = process.env.TELEGRAM_CHAT_ID;
+
+                if (!token || !chatId) {
+                    console.warn('[Order API] Telegram credentials missing, skipping notification');
+                    return;
+                }
+
+                const itemsList = items.map((item: any) =>
+                    `• ${item.name} (x${item.quantity}) - ${item.unitPriceIQD.toLocaleString()} IQD`
+                ).join('\n');
+
+                const timestamp = new Date().toLocaleString('en-IQ', { timeZone: 'Asia/Baghdad' });
+
+                const message = `📦 *New Order Received!*
+
+👤 *Customer Name:* ${customerName}
+📞 *Phone:* ${phone}
+📍 *Address:* ${address}
+
+--------------------------
+🛒 *Products:*
+${itemsList}
+--------------------------
+
+💰 *Total Price:* $${totalUSD.toFixed(2)} / ${total.toLocaleString()} IQD
+🕒 *Order Time:* ${timestamp}`;
+
+                const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown',
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('[Order API] Telegram notification failed:', error);
+                } else {
+                    console.log('[Order API] Telegram notification sent successfully');
+                }
+            } catch (error) {
+                console.error('[Order API] Telegram notification failed:', error);
+            }
+        };
+
+        // Fire and forget notifications
         sendEmail();
+        sendTelegramNotification();
 
         return NextResponse.json({ success: true });
     } catch (error) {
