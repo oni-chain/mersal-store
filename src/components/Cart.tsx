@@ -22,7 +22,7 @@ export default function Cart() {
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
         try {
-            const response = await fetch('/api/send-whatsapp', {
+            const response = await fetch('/api/order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
