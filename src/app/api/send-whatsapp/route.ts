@@ -78,22 +78,8 @@ ${itemsList}
 💰 *Total:* $${total}
         `.trim();
 
-        const customerMsg = `
-👋 Hi ${customerName},
-
-Thank you for your order at *Mersal*! 🎮
-
-We have received your order for:
-${itemsList}
-
-💰 *Total: $${total}*
-
-We will process it shortly.
-        `.trim();
-
         // Fire and forget WhatsApp messages
         if (adminPhone) sendWhatsApp(adminPhone, adminMsg);
-        if (phone) sendWhatsApp(phone, customerMsg);
 
         return NextResponse.json({ success: true });
     } catch (error) {
