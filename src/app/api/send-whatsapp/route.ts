@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { supabase } from '@/lib/supabase';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend lazily or check for API key
+const getResendClient = () => {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) return null;
+    return new Resend(apiKey);
+};
 
 export async function POST(request: Request) {
     try {
@@ -67,6 +72,12 @@ export async function POST(request: Request) {
                         </p>
                     </div>
                 `;
+
+                const resend = getResendClient();
+                if (!resend) {
+                    console.warn('[Email API] Resend API key missing, skipping email notification');
+                    return;
+                }
 
                 const { data, error } = await resend.emails.send({
                     from: 'Mersal Orders <onboarding@resend.dev>',
