@@ -21,6 +21,16 @@ export default function Cart() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
+        // Iraqi Phone Validation Regex
+        // Supports: 07701234567, 7701234567, +9647701234567, 009647701234567
+        const iraqiPhoneRegex = /^(07|009647|\+9647|7)\d{9}$/;
+        if (!iraqiPhoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+            alert(t('cart.alerts.invalidPhone'));
+            setLoading(false);
+            clearTimeout(timeoutId);
+            return;
+        }
+
         try {
             const response = await fetch('/api/order', {
                 method: 'POST',

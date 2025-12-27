@@ -14,6 +14,12 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { customerName, phone, items, total, totalUSD, address } = body;
 
+        // Server-side Iraqi Phone Validation
+        const iraqiPhoneRegex = /^(07|009647|\+9647|7)\d{9}$/;
+        if (!phone || !iraqiPhoneRegex.test(phone.toString().replace(/\s/g, ''))) {
+            return NextResponse.json({ success: false, error: 'Invalid Iraqi phone number' }, { status: 400 });
+        }
+
         const adminEmail = process.env.ADMIN_EMAIL || 'AliMainMail@proton.me';
 
         console.log(`[Email API] Processing order for ${customerName}`);

@@ -54,7 +54,8 @@
         "alerts": {
             "placeOrderFail": "Failed to place order",
             "timeout": "Request timed out. Please check your connection.",
-            "unexpected": "An unexpected error occurred."
+            "unexpected": "An unexpected error occurred.",
+            "invalidPhone": "Please enter a valid Iraqi phone number (e.g., 0770XXXXXXX)"
         },
         "modal": {
             "added": "Added to Cart!",
