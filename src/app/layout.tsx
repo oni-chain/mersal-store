@@ -13,8 +13,8 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Mersal | Premium Gaming Gear",
-  description: "Equip yourself with the best wholesale gaming accessories.",
+  title: "Mersal | وجهتك لأفضل ماوس باد",
+  description: "ارخص الاسعار وافضل خدمه ممكن تحصلها",
 };
 
 export default function RootLayout({

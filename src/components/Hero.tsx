@@ -21,7 +21,10 @@ export default function Hero() {
                     {dictionary.hero.subtitle}
                 </p>
                 <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-                    <button className="bg-primary text-white font-bold py-4 px-12 rounded-full hover:bg-blue-600 hover:scale-105 transition-all shadow-lg hover:shadow-primary/25">
+                    <button
+                        onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+                        className="bg-primary text-white font-bold py-4 px-12 rounded-full hover:bg-blue-600 hover:scale-105 transition-all shadow-lg hover:shadow-primary/25"
+                    >
                         {dictionary.hero.cta}
                     </button>
                 </div>

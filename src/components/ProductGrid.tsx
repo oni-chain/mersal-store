@@ -46,7 +46,7 @@ export default function ProductGrid() {
     }
 
     return (
-        <section className="py-20 px-4 max-w-7xl mx-auto bg-black text-white">
+        <section id="products" className="py-20 px-4 max-w-7xl mx-auto bg-black text-white">
             <h2 className="text-4xl font-bold mb-12 text-center tracking-tighter uppercase font-cairo">
                 {dictionary.hero.title} <span className="text-primary">{dictionary.products.title}</span>
             </h2>
@@ -70,7 +70,11 @@ export default function ProductGrid() {
                                 </Link>
                                 <div className="p-6 space-y-4">
                                     <div>
-                                        <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors font-cairo truncate">{product.name}</h3>
+                                        <Link href={`/products/${product.id}`}>
+                                            <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors font-cairo truncate">
+                                                {product.name}
+                                            </h3>
+                                        </Link>
                                         <div className="flex items-center gap-4 mt-2">
                                             <span className="text-xl font-black text-primary">{(product.priceIQD || (product.price * 1450)).toLocaleString()} IQD</span>
                                             <span className="text-sm font-bold text-gray-500 italic">| ${product.price}</span>
