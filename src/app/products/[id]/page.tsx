@@ -101,7 +101,7 @@ export default function ProductPage() {
                             />
                         )}
                         {activeTier && (
-                            <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.5)] animate-bounce text-sm">
+                            <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
                                 {t('products.bulkDiscount')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}% {t('products.savings')}
                             </div>
                         )}
@@ -126,11 +126,11 @@ export default function ProductPage() {
 
                                     <div className="flex flex-col gap-6">
                                         <div className="flex items-center gap-6">
-                                            <div className={`px-8 py-6 rounded-2xl border transition-all duration-300 ${activeTier ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
-                                                <p className={`text-xs font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-red-500' : 'text-primary'}`}>
+                                            <div className={`px-8 py-6 rounded-2xl border transition-all duration-300 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
+                                                <p className={`text-xs font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>
                                                     {activeTier ? t('products.wholesale') : t('products.priceIQD')}
                                                 </p>
-                                                <p className={`text-5xl font-black transition-all duration-300 ${isPulsing ? 'scale-110' : 'scale-100'} ${activeTier ? 'text-red-500' : 'text-white'}`}>
+                                                <p className={`text-5xl font-black transition-all duration-300 ${isPulsing ? 'scale-110' : 'scale-100'} ${activeTier ? 'text-emerald-500' : 'text-white'}`}>
                                                     {unitPriceIQD.toLocaleString()} <span className="text-sm font-bold opacity-70">IQD</span>
                                                 </p>
                                             </div>
@@ -151,7 +151,7 @@ export default function ProductPage() {
                                                     {product.priceTiers.map((tier, idx) => (
                                                         <div
                                                             key={idx}
-                                                            className={`flex items-center justify-between px-6 py-4 rounded-xl border transition-all ${quantity >= tier.min_qty ? 'bg-red-500/20 border-red-500 text-red-500 scale-[1.02] shadow-lg' : 'bg-white/2 border-white/5 text-gray-400 opacity-60'}`}
+                                                            className={`flex items-center justify-between px-6 py-4 rounded-xl border transition-all ${quantity >= tier.min_qty ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.02] shadow-lg' : 'bg-white/2 border-white/5 text-gray-400 opacity-60'}`}
                                                         >
                                                             <div className="flex flex-col">
                                                                 <span className="text-lg font-black">{tier.min_qty}+ {t('products.quantity')}</span>
@@ -209,9 +209,9 @@ export default function ProductPage() {
                                                     className="w-14 h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-3xl font-black transition-colors"
                                                 >+</button>
                                             </div>
-                                            <div className={`flex-1 px-8 py-4 rounded-2xl border flex flex-col justify-center transition-all duration-300 ${activeTier ? 'bg-red-500/10 border-red-500/30' : 'bg-primary/5 border-primary/10'}`}>
-                                                <p className={`text-[10px] font-black uppercase tracking-widest ${activeTier ? 'text-red-500' : 'text-gray-500'}`}>{t('products.totalAmount')}</p>
-                                                <p className={`text-3xl font-black ${activeTier ? 'text-red-500' : 'text-primary'}`}>{totalPriceIQD.toLocaleString()} <span className="text-sm">IQD</span></p>
+                                            <div className={`flex-1 px-8 py-4 rounded-2xl border flex flex-col justify-center transition-all duration-300 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-primary/5 border-primary/10'}`}>
+                                                <p className={`text-[10px] font-black uppercase tracking-widest ${activeTier ? 'text-emerald-500' : 'text-gray-500'}`}>{t('products.totalAmount')}</p>
+                                                <p className={`text-3xl font-black ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>{totalPriceIQD.toLocaleString()} <span className="text-sm">IQD</span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -225,7 +225,7 @@ export default function ProductPage() {
                                                 }
                                             }
                                         }}
-                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${activeTier ? 'bg-red-500 hover:bg-red-600 text-white shadow-red-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20'}`}
+                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20'}`}
                                     >
                                         <ShoppingCart className="w-6 h-6" />
                                         {t('products.addToCart')}

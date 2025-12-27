@@ -142,7 +142,7 @@ export default function Cart() {
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-red-600 transition-colors"
+                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-green-600 transition-colors"
                                     placeholder={t('cart.phonePlaceholder')}
                                 />
                             </div>
@@ -152,7 +152,7 @@ export default function Cart() {
                                     required
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white h-32 resize-none focus:outline-none focus:border-red-600 transition-colors"
+                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white h-32 resize-none focus:outline-none focus:border-green-600 transition-colors"
                                     placeholder={t('cart.addressPlaceholder')}
                                 />
                             </div>
