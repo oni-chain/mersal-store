@@ -9,6 +9,7 @@ export default function Cart() {
     const { t } = useLanguage();
     const [checkoutStep, setCheckoutStep] = useState<'cart' | 'details' | 'success'>('cart');
     const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
+    const [errors, setErrors] = useState<{ phone?: string; general?: string }>({});
     const [loading, setLoading] = useState(false);
 
     const totalIQD = getCartTotalIQD();
@@ -16,6 +17,7 @@ export default function Cart() {
 
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
+        setErrors({});
         setLoading(true);
 
         const controller = new AbortController();
@@ -25,7 +27,7 @@ export default function Cart() {
         // Supports: 07701234567, 7701234567, +9647701234567, 009647701234567
         const iraqiPhoneRegex = /^(07|009647|\+9647|7)\d{9}$/;
         if (!iraqiPhoneRegex.test(formData.phone.replace(/\s/g, ''))) {
-            alert(t('cart.alerts.invalidPhone'));
+            setErrors({ phone: t('cart.alerts.invalidPhone') });
             setLoading(false);
             clearTimeout(timeoutId);
             return;
@@ -58,14 +60,14 @@ export default function Cart() {
             } else {
                 const errorData = await response.json();
                 console.error("Order failed", errorData);
-                alert(`${t('cart.alerts.placeOrderFail')}: ${errorData.error || 'Unknown error'}`);
+                setErrors({ general: `${t('cart.alerts.placeOrderFail')}: ${errorData.error || 'Unknown error'}` });
             }
         } catch (error: any) {
             if (error.name === 'AbortError') {
-                alert(t('cart.alerts.timeout'));
+                setErrors({ general: t('cart.alerts.timeout') });
             } else {
                 console.error('Checkout error:', error);
-                alert(t('cart.alerts.unexpected'));
+                setErrors({ general: t('cart.alerts.unexpected') });
             }
         } finally {
             setLoading(false);
@@ -134,6 +136,12 @@ export default function Cart() {
 
                     {checkoutStep === 'details' && (
                         <form id="checkout-form" onSubmit={handleCheckout} className="space-y-6">
+                            {errors.general && (
+                                <div className="bg-red-500/10 border border-red-500/30 text-red-500 p-3 rounded-lg text-sm font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                                    {errors.general}
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.name')}</label>
                                 <input
@@ -151,10 +159,18 @@ export default function Cart() {
                                     required
                                     type="tel"
                                     value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-green-600 transition-colors"
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, phone: e.target.value });
+                                        if (errors.phone) setErrors({ ...errors, phone: undefined });
+                                    }}
+                                    className={`w-full bg-[#1a1a1a] border ${errors.phone ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-green-600 transition-colors`}
                                     placeholder={t('cart.phonePlaceholder')}
                                 />
+                                {errors.phone && (
+                                    <p className="text-red-500 text-xs font-bold mt-1.5 animate-in fade-in slide-in-from-top-1">
+                                        {errors.phone}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.address')}</label>
