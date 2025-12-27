@@ -124,19 +124,19 @@ export default function ProductPage() {
                                 <div className="space-y-6">
                                     <h1 className="text-4xl md:text-5xl font-black font-cairo tracking-tight text-white">{product?.name}</h1>
 
-                                    <div className="flex flex-col gap-6">
-                                        <div className="flex items-center gap-6">
-                                            <div className={`px-8 py-6 rounded-2xl border transition-all duration-300 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
-                                                <p className={`text-xs font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4">
+                                            <div className={`px-5 py-5 lg:px-8 lg:py-6 rounded-2xl border transition-all duration-300 flex-1 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
+                                                <p className={`text-[10px] lg:text-xs font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>
                                                     {activeTier ? t('products.wholesale') : t('products.priceIQD')}
                                                 </p>
-                                                <p className={`text-5xl font-black transition-all duration-300 ${isPulsing ? 'scale-110' : 'scale-100'} ${activeTier ? 'text-emerald-500' : 'text-white'}`}>
-                                                    {unitPriceIQD.toLocaleString()} <span className="text-sm font-bold opacity-70">IQD</span>
+                                                <p className={`text-3xl sm:text-4xl lg:text-5xl font-black transition-all duration-300 ${isPulsing ? 'scale-105' : 'scale-100'} ${activeTier ? 'text-emerald-500' : 'text-white'} leading-none`}>
+                                                    {unitPriceIQD.toLocaleString()} <span className="text-xs sm:text-sm font-bold opacity-70">IQD</span>
                                                 </p>
                                             </div>
-                                            <div className="px-6 py-3 bg-white/5 rounded-xl border border-white/10">
-                                                <p className="text-xs font-bold text-gray-500 uppercase mb-1">{t('products.priceUSD')}</p>
-                                                <p className="text-2xl font-black text-gray-400">${unitPriceUSD.toFixed(2)}</p>
+                                            <div className="px-5 py-4 bg-white/5 rounded-2xl border border-white/10 lg:w-auto">
+                                                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1 leading-none">{t('products.priceUSD')}</p>
+                                                <p className="text-lg lg:text-2xl font-black text-gray-400 leading-none">${unitPriceUSD.toFixed(2)}</p>
                                             </div>
                                         </div>
 
@@ -188,11 +188,11 @@ export default function ProductPage() {
                                                 <span>{t('products.moqBadge', { qty: product?.minOrderQty || 1 })}</span>
                                             )}
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-2 gap-4">
+                                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4">
+                                            <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-2 gap-3 lg:gap-4 justify-between lg:justify-start">
                                                 <button
                                                     onClick={() => setQuantity(Math.max(product?.minOrderQty || 1, quantity - 1))}
-                                                    className="w-14 h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-3xl font-black transition-colors"
+                                                    className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl lg:text-3xl font-black transition-colors"
                                                 >-</button>
                                                 <input
                                                     type="number"
@@ -202,16 +202,16 @@ export default function ProductPage() {
                                                         if (!isNaN(val)) setQuantity(Math.max(1, val));
                                                     }}
                                                     onBlur={() => setQuantity(Math.max(product?.minOrderQty || 1, quantity))}
-                                                    className="w-24 bg-transparent text-center text-3xl font-black focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    className="w-12 lg:w-24 bg-transparent text-center text-xl lg:text-3xl font-black focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                 />
                                                 <button
                                                     onClick={() => setQuantity(quantity + 1)}
-                                                    className="w-14 h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-3xl font-black transition-colors"
+                                                    className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl lg:text-3xl font-black transition-colors"
                                                 >+</button>
                                             </div>
-                                            <div className={`flex-1 px-8 py-4 rounded-2xl border flex flex-col justify-center transition-all duration-300 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-primary/5 border-primary/10'}`}>
-                                                <p className={`text-[10px] font-black uppercase tracking-widest ${activeTier ? 'text-emerald-500' : 'text-gray-500'}`}>{t('products.totalAmount')}</p>
-                                                <p className={`text-3xl font-black ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>{totalPriceIQD.toLocaleString()} <span className="text-sm">IQD</span></p>
+                                            <div className={`flex-1 px-5 py-4 lg:px-8 lg:py-4 rounded-2xl border flex flex-col justify-center transition-all duration-300 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-primary/5 border-primary/10'}`}>
+                                                <p className={`text-[10px] font-black uppercase tracking-widest ${activeTier ? 'text-emerald-500' : 'text-gray-500'} leading-none`}>{t('products.totalAmount')}</p>
+                                                <p className={`text-xl lg:text-3xl font-black ${activeTier ? 'text-emerald-500' : 'text-primary'} leading-tight mt-1`}>{totalPriceIQD.toLocaleString()} <span className="text-[10px] lg:text-sm">IQD</span></p>
                                             </div>
                                         </div>
                                     </div>
