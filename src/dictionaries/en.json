@@ -3,7 +3,8 @@
         "home": "Home",
         "products": "Products",
         "about": "About",
-        "cart": "Cart"
+        "cart": "Cart",
+        "contact": "Contact"
     },
     "hero": {
         "title": "Mersal",

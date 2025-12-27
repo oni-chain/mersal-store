@@ -32,6 +32,19 @@ export default function Navbar() {
                     </div>
 
                     <div className="flex items-center gap-6">
+                        <a
+                            href="https://wa.me/9647708511364"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                        >
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            {t('nav.contact')}
+                        </a>
+
                         <button
                             onClick={toggleLanguage}
                             className="text-gray-300 hover:text-white transition-colors text-sm font-bold flex items-center gap-1"
@@ -65,6 +78,15 @@ export default function Navbar() {
             <div id="mobile-menu" className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 right-0 p-4 shadow-xl`}>
                 <div className="flex flex-col space-y-4 font-bold text-center">
                     {/* Links removed as requested */}
+                    <a
+                        href="https://wa.me/9647708511364"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-3 text-emerald-500 uppercase tracking-widest text-sm border border-emerald-900/30 rounded-lg bg-emerald-500/5 flex items-center justify-center gap-2"
+                    >
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                        {t('nav.contact')}
+                    </a>
                     <button onClick={toggleCart} className="py-2 text-red-600 uppercase tracking-widest text-sm border border-red-900 rounded-lg bg-red-900/10">
                         {t('nav.cart')} ({itemCount})
                     </button>
