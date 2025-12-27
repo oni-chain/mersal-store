@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   description: "ارخص الاسعار وافضل خدمه ممكن تحصلها",
 };
 
+export const viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
