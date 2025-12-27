@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCartStore, getPriceAtQuantity } from '@/store/cart';
 import { X, Trash2, ArrowRight, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -11,6 +11,14 @@ export default function Cart() {
     const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
     const [errors, setErrors] = useState<{ phone?: string; general?: string }>({});
     const [loading, setLoading] = useState(false);
+
+    // Reset cart state when closed to ensure a clean start next time
+    useEffect(() => {
+        if (!isOpen) {
+            setCheckoutStep('cart');
+            setErrors({});
+        }
+    }, [isOpen]);
 
     const totalIQD = getCartTotalIQD();
     const totalUSD = getCartTotal();
