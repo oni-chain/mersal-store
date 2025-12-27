@@ -29,7 +29,8 @@
         "pricePerUnit": "سعر الوحدة",
         "quantity": "الكمية",
         "savings": "توفير",
-        "bulkSavings": "توفير الجملة"
+        "bulkSavings": "توفير الجملة",
+        "viewDetails": "اضغط لعرض التفاصيل"
     },
     "cart": {
         "title": "سلتك",

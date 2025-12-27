@@ -29,7 +29,8 @@
         "pricePerUnit": "Price per unit",
         "quantity": "Quantity",
         "savings": "Savings",
-        "bulkSavings": "Bulk Savings"
+        "bulkSavings": "Bulk Savings",
+        "viewDetails": "Click to view details"
     },
     "cart": {
         "title": "Your Loadout",
