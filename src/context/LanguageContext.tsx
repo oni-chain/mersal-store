@@ -74,7 +74,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <LanguageContext.Provider value={{ language, dictionary, toggleLanguage, direction, t }}>
-            {children}
+            <div key={language} className="animate-lang-switch">
+                {children}
+            </div>
         </LanguageContext.Provider>
     );
 }
