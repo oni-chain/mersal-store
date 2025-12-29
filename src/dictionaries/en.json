@@ -36,6 +36,8 @@
         "limitedStock": "Limited Stock",
         "unitsAvailable": "Units available",
         "unitsSold": "Sold {qty} units",
+        "call": "Call",
+        "whatsapp": "WhatsApp",
         "notEnoughStock": "Not enough stock available"
     },
     "cart": {

@@ -36,6 +36,8 @@
         "limitedStock": "كمية محدودة",
         "unitsAvailable": "قطع متوفرة",
         "unitsSold": "تم بيع {qty} قطعة",
+        "call": "اتصال",
+        "whatsapp": "واتساب",
         "notEnoughStock": "الكمية المطلوبة غير متوفرة"
     },
     "cart": {

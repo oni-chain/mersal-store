@@ -81,7 +81,9 @@ export default function OutOfStockModal() {
                                 className="group bg-primary text-black font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 hover:bg-cyan-400 shadow-lg shadow-primary/20"
                             >
                                 <Phone className="w-5 h-5" />
-                                <span className="uppercase tracking-widest text-xs">Call</span>
+                                <span className="uppercase tracking-widest text-xs font-cairo">
+                                    {t('products.call')}
+                                </span>
                             </a>
 
                             <a
@@ -91,7 +93,9 @@ export default function OutOfStockModal() {
                                 className="group bg-emerald-500 text-white font-black py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"
                             >
                                 <MessageCircle className="w-5 h-5" />
-                                <span className="uppercase tracking-widest text-xs">WhatsApp</span>
+                                <span className="uppercase tracking-widest text-xs font-cairo">
+                                    {t('products.whatsapp')}
+                                </span>
                             </a>
                         </div>
 
