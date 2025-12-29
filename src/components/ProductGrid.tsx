@@ -138,7 +138,7 @@ export default function ProductGrid() {
                                             dictionary.products.outOfStock
                                         ) : (
                                             <>
-                                                <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.addToCart}
+                                                <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.buyNow}
                                             </>
                                         )}
                                     </Link>
