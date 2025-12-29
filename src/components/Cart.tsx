@@ -111,44 +111,54 @@ export default function Cart() {
                                 </div>
                             ) : (
                                 <div className="space-y-6">
-                                    {items.map((item) => (
-                                        <div key={item.id} className="flex gap-4 bg-[#1a1a1a] p-4 rounded-xl border border-white/5">
-                                            <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg bg-black" />
-                                            <div className="flex-1">
-                                                <h3 className="font-bold text-white mb-1">{item.name}</h3>
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-primary font-bold">{getPriceAtQuantity(item, item.quantity).toLocaleString()} IQD</p>
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">${(getPriceAtQuantity(item, item.quantity) / 1450).toFixed(2)}</span>
+                                    {items.map((item) => {
+                                        const unitPrice = getPriceAtQuantity(item, item.quantity);
+                                        const isWholesale = item.priceTiers?.some(t => item.quantity >= t.min_qty);
+
+                                        return (
+                                            <div key={item.id} className={`flex gap-4 p-4 rounded-xl border transition-all duration-300 ${isWholesale ? 'bg-emerald-500/5 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]' : 'bg-[#1a1a1a] border-white/5'}`}>
+                                                <div className="relative w-20 h-20 shrink-0">
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg bg-black" />
                                                 </div>
-                                                <div className="flex items-center gap-3 mt-2 bg-black/40 w-fit rounded-full p-1 border border-white/5">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                        className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-colors"
-                                                    >-</button>
-                                                    <span className="text-white w-6 text-center font-bold">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => {
-                                                            if (item.quantity >= (item.stock ?? 999)) {
-                                                                alert(t('products.maxStockReached'));
-                                                                return;
-                                                            }
-                                                            updateQuantity(item.id, item.quantity + 1);
-                                                        }}
-                                                        disabled={item.quantity >= (item.stock ?? 999)}
-                                                        className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                                    >+</button>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-bold text-white mb-1 truncate">{item.name}</h3>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className={`font-black ${isWholesale ? 'text-emerald-500' : 'text-primary'}`}>{unitPrice.toLocaleString()} IQD</p>
+                                                        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">${(unitPrice / 1450).toFixed(2)}</span>
+                                                    </div>
+
+                                                    {isWholesale && (
+                                                        <div className="mt-1 flex items-center gap-1.5 animate-pulse">
+                                                            <div className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                                            <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">{t('cart.wholesalePriceApplied')}</span>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex items-center gap-3 mt-3 bg-black/40 w-fit rounded-full p-1 border border-white/5">
+                                                        <button
+                                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                            className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-colors"
+                                                        >-</button>
+                                                        <span className="text-white w-6 text-center font-bold">{item.quantity}</span>
+                                                        <button
+                                                            onClick={() => {
+                                                                if (item.quantity >= (item.stock ?? 999)) {
+                                                                    alert(t('products.maxStockReached'));
+                                                                    return;
+                                                                }
+                                                                updateQuantity(item.id, item.quantity + 1);
+                                                            }}
+                                                            disabled={item.quantity >= (item.stock ?? 999)}
+                                                            className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                                        >+</button>
+                                                    </div>
                                                 </div>
-                                                {item.quantity >= (item.stock ?? 999) && (
-                                                    <p className="text-[10px] text-primary/60 font-black uppercase mt-1 tracking-widest leading-none">
-                                                        {t('products.maxStockReached')}
-                                                    </p>
-                                                )}
+                                                <button onClick={() => removeFromCart(item.id)} className="text-gray-500 hover:text-red-500 shrink-0 self-start p-1">
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
                                             </div>
-                                            <button onClick={() => removeFromCart(item.id)} className="text-gray-500 hover:text-red-500 self-start">
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </>

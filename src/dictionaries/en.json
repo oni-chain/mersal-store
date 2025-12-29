@@ -61,6 +61,7 @@
         "phonePlaceholder": "Phone Number",
         "addressPlaceholder": "Enter your full shipping address...",
         "orderTotal": "Order Total",
+        "wholesalePriceApplied": "Wholesale Price Applied!",
         "alerts": {
             "placeOrderFail": "Failed to place order",
             "timeout": "Request timed out. Please check your connection.",

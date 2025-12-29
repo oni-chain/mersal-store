@@ -61,6 +61,7 @@
         "phonePlaceholder": "رقم الهاتف",
         "addressPlaceholder": "أدخل عنوان الشحن الكامل هنا...",
         "orderTotal": "إجمالي الطلب",
+        "wholesalePriceApplied": "تم تطبيق سعر الجملة!",
         "alerts": {
             "placeOrderFail": "فشل في تقديم الطلب",
             "timeout": "انتهت مهلة الطلب. يرجى التحقق من الاتصال.",

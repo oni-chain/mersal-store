@@ -26,7 +26,8 @@ const fetchProducts = async (): Promise<Product[]> => {
         description: p.description,
         minOrderQty: p.min_order_qty,
         stock: p.stock,
-        soldCount: p.sold_count
+        soldCount: p.sold_count,
+        priceTiers: p.price_tiers
     }));
 };
 
