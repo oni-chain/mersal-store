@@ -38,7 +38,8 @@
         "unitsSold": "Sold {qty} units",
         "call": "Call",
         "whatsapp": "WhatsApp",
-        "notEnoughStock": "Not enough stock available"
+        "notEnoughStock": "Not enough stock available",
+        "maxStockReached": "Maximum available stock reached"
     },
     "cart": {
         "title": "Your Loadout",

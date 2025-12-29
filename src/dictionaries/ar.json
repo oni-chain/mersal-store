@@ -38,7 +38,8 @@
         "unitsSold": "تم بيع {qty} قطعة",
         "call": "اتصال",
         "whatsapp": "واتساب",
-        "notEnoughStock": "الكمية المطلوبة غير متوفرة"
+        "notEnoughStock": "الكمية المطلوبة غير متوفرة",
+        "maxStockReached": "لقد وصلت للحد الأقصى المتوفر"
     },
     "cart": {
         "title": "سلتك",

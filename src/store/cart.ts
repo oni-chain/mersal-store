@@ -55,12 +55,25 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     addToCart: (product, quantity = 1) => {
         const minQty = product.minOrderQty || 1;
+        const stock = product.stock ?? 999;
 
         // Validate MOQ
         if (quantity < minQty) {
             return {
                 success: false,
                 error: `Minimum order quantity is ${minQty} units`
+            };
+        }
+
+        const state = get();
+        const existingItem = state.items.find(item => item.id === product.id);
+        const currentQty = existingItem?.quantity || 0;
+
+        // Validate Stock
+        if (currentQty + quantity > stock) {
+            return {
+                success: false,
+                error: `Not enough stock available. Remaining: ${Math.max(0, stock - currentQty)}`
             };
         }
 
@@ -91,11 +104,19 @@ export const useCartStore = create<CartState>((set, get) => ({
         items: state.items.filter(item => item.id !== productId)
     })),
 
-    updateQuantity: (productId, quantity) => set((state) => ({
-        items: state.items.map(item =>
-            item.id === productId ? { ...item, quantity: Math.max(0, quantity) } : item
-        ).filter(item => item.quantity > 0)
-    })),
+    updateQuantity: (productId, quantity) => set((state) => {
+        const item = state.items.find(i => i.id === productId);
+        if (!item) return state;
+
+        const stock = item.stock ?? 999;
+        const finalQty = Math.min(stock, Math.max(0, quantity));
+
+        return {
+            items: state.items.map(i =>
+                i.id === productId ? { ...i, quantity: finalQty } : i
+            ).filter(i => i.quantity > 0)
+        };
+    }),
 
     clearCart: () => set({ items: [] }),
 

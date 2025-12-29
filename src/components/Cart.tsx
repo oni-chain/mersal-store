@@ -120,17 +120,29 @@ export default function Cart() {
                                                     <p className="text-primary font-bold">{getPriceAtQuantity(item, item.quantity).toLocaleString()} IQD</p>
                                                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">${(getPriceAtQuantity(item, item.quantity) / 1450).toFixed(2)}</span>
                                                 </div>
-                                                <div className="flex items-center gap-3 mt-2">
+                                                <div className="flex items-center gap-3 mt-2 bg-black/40 w-fit rounded-full p-1 border border-white/5">
                                                     <button
                                                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                        className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-neutral-800"
+                                                        className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-colors"
                                                     >-</button>
-                                                    <span className="text-white w-4 text-center">{item.quantity}</span>
+                                                    <span className="text-white w-6 text-center font-bold">{item.quantity}</span>
                                                     <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                        className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-neutral-800"
+                                                        onClick={() => {
+                                                            if (item.quantity >= (item.stock ?? 999)) {
+                                                                alert(t('products.maxStockReached'));
+                                                                return;
+                                                            }
+                                                            updateQuantity(item.id, item.quantity + 1);
+                                                        }}
+                                                        disabled={item.quantity >= (item.stock ?? 999)}
+                                                        className="w-8 h-8 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                                     >+</button>
                                                 </div>
+                                                {item.quantity >= (item.stock ?? 999) && (
+                                                    <p className="text-[10px] text-primary/60 font-black uppercase mt-1 tracking-widest leading-none">
+                                                        {t('products.maxStockReached')}
+                                                    </p>
+                                                )}
                                             </div>
                                             <button onClick={() => removeFromCart(item.id)} className="text-gray-500 hover:text-red-500 self-start">
                                                 <Trash2 className="w-5 h-5" />
