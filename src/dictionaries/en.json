@@ -13,7 +13,7 @@
     },
     "products": {
         "title": "ELITE ARSENAL",
-        "addToCart": "Add to Cart",
+        "addToCart": "Buy",
         "outOfStock": "Out of Stock",
         "outOfStockMsg": "Sorry, this product is currently out of stock and will be available soon. For details, please contact: 07708511364",
         "moq": "Minimum Order",

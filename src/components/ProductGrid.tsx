@@ -130,18 +130,9 @@ export default function ProductGrid() {
                                             </span>
                                         </div>
                                     ) : null}
-                                    <button
-                                        onClick={() => {
-                                            if (product.stock !== undefined && product.stock <= 0) {
-                                                openOutOfStockModal(product);
-                                                return;
-                                            }
-                                            const result = addToCart(product, product.minOrderQty || 1);
-                                            if (!result.success && result.error) {
-                                                alert(result.error);
-                                            }
-                                        }}
-                                        className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95 group/btn shadow-lg ${product.stock !== undefined && product.stock <= 0 ? 'bg-gray-800 text-gray-400 border border-white/5 hover:bg-gray-700' : 'bg-white text-black hover:bg-primary hover:text-black'}`}
+                                    <Link
+                                        href={`/products/${product.id}`}
+                                        className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95 group/btn shadow-lg ${product.stock !== undefined && product.stock <= 0 ? 'bg-gray-800 text-gray-400 border border-white/5 hover:bg-gray-700 pointer-events-none' : 'bg-white text-black hover:bg-primary hover:text-black'}`}
                                     >
                                         {product.stock !== undefined && product.stock <= 0 ? (
                                             dictionary.products.outOfStock
@@ -150,7 +141,7 @@ export default function ProductGrid() {
                                                 <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.addToCart}
                                             </>
                                         )}
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         ))}
