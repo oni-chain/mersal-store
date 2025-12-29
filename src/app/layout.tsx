@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import Cart from "@/components/Cart";
 import AddToCartModal from "@/components/AddToCartModal";
+import OutOfStockModal from "@/components/OutOfStockModal";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const cairo = Cairo({
@@ -38,6 +39,7 @@ export default function RootLayout({
           {children}
           <Cart />
           <AddToCartModal />
+          <OutOfStockModal />
         </LanguageProvider>
       </body>
     </html>

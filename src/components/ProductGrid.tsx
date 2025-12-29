@@ -36,7 +36,7 @@ export default function ProductGrid() {
         dedupingInterval: 60000, // 1 minute cache
     });
 
-    const addToCart = useCartStore((state) => state.addToCart);
+    const { showAddToCartModal, lastAddedProduct, addToCart, openOutOfStockModal } = useCartStore();
     const { dictionary } = useLanguage();
 
     if (error) {
@@ -109,7 +109,7 @@ export default function ProductGrid() {
                                     <button
                                         onClick={() => {
                                             if (product.stock !== undefined && product.stock <= 0) {
-                                                alert(dictionary.products.outOfStockMsg);
+                                                openOutOfStockModal(product);
                                                 return;
                                             }
                                             const result = addToCart(product, product.minOrderQty || 1);

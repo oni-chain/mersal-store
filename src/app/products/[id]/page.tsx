@@ -42,7 +42,7 @@ export default function ProductPage() {
         dedupingInterval: 60000,
     });
 
-    const addToCart = useCartStore((state) => state.addToCart);
+    const { addToCart, openOutOfStockModal } = useCartStore();
     const { t, language } = useLanguage();
     const [quantity, setQuantity] = React.useState(1);
     const [isPulsing, setIsPulsing] = React.useState(false);
@@ -256,7 +256,7 @@ export default function ProductPage() {
                                         onClick={() => {
                                             if (product) {
                                                 if (product.stock !== undefined && product.stock <= 0) {
-                                                    alert(t('products.outOfStockMsg'));
+                                                    openOutOfStockModal(product);
                                                     return;
                                                 }
                                                 if (quantity > (product.stock || 0)) {

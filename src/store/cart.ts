@@ -21,12 +21,14 @@ interface CartState {
     items: CartItem[];
     isOpen: boolean;
     showAddToCartModal: boolean;
+    showOutOfStockModal: boolean;
     lastAddedProduct: Product | null;
     addToCart: (product: Product, quantity?: number) => { success: boolean; error?: string };
     removeFromCart: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
     clearCart: () => void;
     toggleCart: () => void;
+    openOutOfStockModal: (product: Product) => void;
     closeModal: () => void;
     getCartTotal: () => number;
     getCartTotalIQD: () => number;
@@ -48,6 +50,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     items: [],
     isOpen: false,
     showAddToCartModal: false,
+    showOutOfStockModal: false,
     lastAddedProduct: null,
 
     addToCart: (product, quantity = 1) => {
@@ -98,7 +101,16 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
 
-    closeModal: () => set({ showAddToCartModal: false, lastAddedProduct: null }),
+    openOutOfStockModal: (product) => set({
+        showOutOfStockModal: true,
+        lastAddedProduct: product
+    }),
+
+    closeModal: () => set({
+        showAddToCartModal: false,
+        showOutOfStockModal: false,
+        lastAddedProduct: null
+    }),
 
     getCartTotal: () => {
         const { items } = get();
