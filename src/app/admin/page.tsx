@@ -202,7 +202,7 @@ export default function AdminPage() {
                     // Fetch latest stock to ensure accuracy and prevent race conditions
                     const { data: product, error: fetchError } = await supabase
                         .from('products')
-                        .select('stock')
+                        .select('stock, sold_count')
                         .eq('id', item.id)
                         .single();
 
@@ -212,33 +212,41 @@ export default function AdminPage() {
                     }
 
                     const newStock = Math.max(0, (product.stock || 0) - item.quantity);
+                    const newSoldCount = (product.sold_count || 0) + item.quantity;
 
-                    const { error: stockError } = await supabase
+                    const { error: updateError } = await supabase
                         .from('products')
-                        .update({ stock: newStock })
+                        .update({
+                            stock: newStock,
+                            sold_count: newSoldCount
+                        })
                         .eq('id', item.id);
 
-                    if (stockError) {
-                        console.error(`Failed to update stock for product ${item.id}`);
+                    if (updateError) {
+                        console.error(`Failed to update product ${item.id}`);
                     }
                 }
             }
-            // Stock Restoration Logic: Triggered when status changes FROM 'confirmed' to something else (e.g. cancelled)
+            // Stock & Sold Count Restoration Logic: Triggered when status changes FROM 'confirmed' to something else (e.g. cancelled)
             else if (oldStatus === 'confirmed' && newStatus !== 'confirmed' && order.items) {
                 for (const item of order.items) {
                     const { data: product, error: fetchError } = await supabase
                         .from('products')
-                        .select('stock')
+                        .select('stock, sold_count')
                         .eq('id', item.id)
                         .single();
 
                     if (fetchError || !product) continue;
 
                     const newStock = (product.stock || 0) + item.quantity;
+                    const newSoldCount = Math.max(0, (product.sold_count || 0) - item.quantity);
 
                     await supabase
                         .from('products')
-                        .update({ stock: newStock })
+                        .update({
+                            stock: newStock,
+                            sold_count: newSoldCount
+                        })
                         .eq('id', item.id);
                 }
             }

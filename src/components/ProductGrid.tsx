@@ -24,7 +24,9 @@ const fetchProducts = async (): Promise<Product[]> => {
         priceIQD: p.price_iqd,
         image: p.image_url,
         description: p.description,
-        minOrderQty: p.min_order_qty
+        minOrderQty: p.min_order_qty,
+        stock: p.stock,
+        soldCount: p.sold_count
     }));
 };
 
@@ -96,6 +98,14 @@ export default function ProductGrid() {
                                             </span>
                                         </div>
                                     )}
+
+                                    {product.soldCount && product.soldCount > 0 ? (
+                                        <div className="absolute top-4 right-4 z-10 px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl flex items-center gap-2">
+                                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest font-cairo">
+                                                {dictionary.products.unitsSold.replace('{qty}', product.soldCount.toString())}
+                                            </span>
+                                        </div>
+                                    ) : null}
                                     <button
                                         onClick={() => {
                                             const result = addToCart(product, product.minOrderQty || 1);

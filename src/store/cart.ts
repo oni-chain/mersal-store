@@ -9,6 +9,7 @@ export interface Product {
     description?: string;
     minOrderQty?: number;
     stock?: number;
+    soldCount?: number;
     priceTiers?: { min_qty: number; price_iqd: number }[];
 }
 

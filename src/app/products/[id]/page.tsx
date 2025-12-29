@@ -30,6 +30,7 @@ const fetchProduct = async (id: string): Promise<Product> => {
         description: data.description,
         minOrderQty: data.min_order_qty,
         stock: data.stock,
+        soldCount: data.sold_count,
         priceTiers: data.price_tiers
     };
 };
@@ -141,15 +142,32 @@ export default function ProductPage() {
                                             </div>
                                         </div>
 
-                                        {/* Stock Status */}
-                                        <div className={`p-4 rounded-2xl border flex items-center justify-between ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30') : 'bg-red-500/10 border-red-500/30'}`}>
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Status</span>
-                                                <span className={`text-sm font-bold ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
-                                                    {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} (${product.stock} ${t('products.unitsAvailable')})` : `${t('products.inStock')} (${product.stock} ${t('products.unitsAvailable')})`) : t('products.outOfStock')}
-                                                </span>
+                                        {/* Stock & Sales Status */}
+                                        <div className="flex flex-col gap-3">
+                                            <div className={`p-4 rounded-2xl border flex items-center justify-between transition-all duration-300 ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30') : 'bg-red-500/10 border-red-500/30'}`}>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t('cart.shippingDetails')}</span>
+                                                    <span className={`text-sm font-bold ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
+                                                        {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} (${product.stock} ${t('products.unitsAvailable')})` : `${t('products.inStock')} (${product.stock} ${t('products.unitsAvailable')})`) : t('products.outOfStock')}
+                                                    </span>
+                                                </div>
+                                                <div className={`w-3 h-3 rounded-full ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500') : 'bg-red-500'}`} />
                                             </div>
-                                            <div className={`w-3 h-3 rounded-full ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500') : 'bg-red-500'}`} />
+
+                                            {product?.soldCount && product.soldCount > 0 ? (
+                                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
+                                                    <div className="flex -space-x-2">
+                                                        {[...Array(3)].map((_, i) => (
+                                                            <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center overflow-hidden">
+                                                                <div className="w-full h-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary italic">M</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-xs font-bold text-gray-400 italic">
+                                                        {t('products.unitsSold').replace('{qty}', product.soldCount.toString())}
+                                                    </span>
+                                                </div>
+                                            ) : null}
                                         </div>
 
                                         {/* Bulk Savings Section */}
