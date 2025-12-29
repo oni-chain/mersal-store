@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Loader2, RefreshCw, Package, ShoppingCart, Trash2, Plus, Upload, Edit, X, DollarSign, Globe } from 'lucide-react';
 import Image from 'next/image';
+import { updateOrderStatus as sharedUpdateOrderStatus } from '@/lib/order-logic';
 
 const EXCHANGE_RATE = 1450; // 1 USD = 1450 IQD
 
@@ -193,79 +194,16 @@ export default function AdminPage() {
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         setUpdating(orderId);
         try {
-            const order = orders.find(o => o.id === orderId);
-            const oldStatus = order?.status;
+            const { success } = await sharedUpdateOrderStatus(orderId, newStatus);
 
-            // Stock Reduction Logic: Triggered when status changes to 'confirmed'
-            if (newStatus === 'confirmed' && oldStatus !== 'confirmed' && order.items) {
-                for (const item of order.items) {
-                    // Fetch latest stock to ensure accuracy and prevent race conditions
-                    const { data: product, error: fetchError } = await supabase
-                        .from('products')
-                        .select('stock, sold_count')
-                        .eq('id', item.id)
-                        .single();
-
-                    if (fetchError || !product) {
-                        console.error(`Failed to fetch stock for product ${item.id}`);
-                        continue;
-                    }
-
-                    const newStock = Math.max(0, (product.stock || 0) - item.quantity);
-                    const newSoldCount = (product.sold_count || 0) + item.quantity;
-
-                    const { error: updateError } = await supabase
-                        .from('products')
-                        .update({
-                            stock: newStock,
-                            sold_count: newSoldCount
-                        })
-                        .eq('id', item.id);
-
-                    if (updateError) {
-                        console.error(`Failed to update product ${item.id}`);
-                    }
-                }
-            }
-            // Stock & Sold Count Restoration Logic: Triggered when status changes FROM 'confirmed' to something else (e.g. cancelled)
-            else if (oldStatus === 'confirmed' && newStatus !== 'confirmed' && order.items) {
-                for (const item of order.items) {
-                    const { data: product, error: fetchError } = await supabase
-                        .from('products')
-                        .select('stock, sold_count')
-                        .eq('id', item.id)
-                        .single();
-
-                    if (fetchError || !product) continue;
-
-                    const newStock = (product.stock || 0) + item.quantity;
-                    const newSoldCount = Math.max(0, (product.sold_count || 0) - item.quantity);
-
-                    await supabase
-                        .from('products')
-                        .update({
-                            stock: newStock,
-                            sold_count: newSoldCount
-                        })
-                        .eq('id', item.id);
-                }
-            }
-
-            const { error } = await supabase
-                .from('orders')
-                .update({ status: newStatus })
-                .eq('id', orderId);
-
-            if (error) throw error;
-            setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-
-            // Re-fetch products if stock might have changed
-            if ((newStatus === 'confirmed' && oldStatus !== 'confirmed') || (oldStatus === 'confirmed' && newStatus !== 'confirmed')) {
+            if (success) {
+                setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+                // Re-fetch products to show updated stock immediately in the products tab
                 fetchData();
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Update error:", error);
-            alert('Failed to update status');
+            alert(`Failed to update status: ${error.message}`);
         } finally {
             setUpdating(null);
         }

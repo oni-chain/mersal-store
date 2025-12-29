@@ -25,8 +25,9 @@ export async function POST(request: Request) {
         console.log(`[Email API] Processing order for ${customerName}`);
 
         // Save Order to Supabase (Critical Path)
+        let orderId = '';
         try {
-            const { error: dbError } = await supabase
+            const { data: newOrder, error: dbError } = await supabase
                 .from('orders')
                 .insert([{
                     customer_name: customerName,
@@ -34,12 +35,15 @@ export async function POST(request: Request) {
                     address: address,
                     items: items,
                     total: total, // IQD Total
-                    total_usd: totalUSD, // Add if column exists, or store in JSON
+                    total_usd: totalUSD,
                     status: 'pending'
-                }]);
+                }])
+                .select('id')
+                .single();
 
             if (dbError) throw dbError;
-            console.log('[Email API] Order saved to Supabase successfully');
+            orderId = newOrder.id;
+            console.log(`[Email API] Order saved to Supabase: ${orderId}`);
         } catch (dbError) {
             console.error("CRITICAL: Error saving to Supabase:", dbError);
         }
@@ -62,6 +66,7 @@ export async function POST(request: Request) {
                             <p><strong>Name:</strong> ${customerName}</p>
                             <p><strong>Phone:</strong> ${phone}</p>
                             <p><strong>Address:</strong> ${address}</p>
+                            <p><strong>Order ID:</strong> ${orderId}</p>
                         </div>
 
                         <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
@@ -108,17 +113,7 @@ export async function POST(request: Request) {
                 const token = process.env.TELEGRAM_BOT_TOKEN;
                 const chatId = process.env.TELEGRAM_CHAT_ID;
 
-                console.log(`[Telegram Debug] Attempting to send to Chat ID: ${chatId}`);
-
-                if (!token || !chatId) {
-                    console.error('[Order API] Telegram credentials missing. BOT_TOKEN or CHAT_ID is null.');
-                    return;
-                }
-
-                // Check for Bot ID vs Personal ID mismatch
-                if (token.startsWith(chatId)) {
-                    console.warn('[Order API] WARNING: The Chat ID matches the Bot ID. Bots cannot message themselves. Please use your personal Chat ID.');
-                }
+                if (!token || !chatId) return;
 
                 const itemsList = items.map((item: any) =>
                     `• ${item.name} (x${item.quantity}) - <b>${item.unitPriceIQD.toLocaleString()} IQD</b>`
@@ -127,17 +122,14 @@ export async function POST(request: Request) {
                 const timestamp = new Date().toLocaleString('en-IQ', { timeZone: 'Asia/Baghdad' });
 
                 const message = `📦 <b>New Order Received - Mersal - مرسال</b>
-
-👤 <b>Customer Name:</b> ${customerName}
+\n👤 <b>Customer Name:</b> ${customerName}
 📞 <b>Phone:</b> ${phone}
 📍 <b>Address:</b> ${address}
-
---------------------------
+\n--------------------------
 🛒 <b>Products:</b>
 ${itemsList}
 --------------------------
-
-💰 <b>Total Price:</b> $${totalUSD.toFixed(2)} / <b>${total.toLocaleString()} IQD</b>
+\n💰 <b>Total Price:</b> $${totalUSD.toFixed(2)} / <b>${total.toLocaleString()} IQD</b>
 🕒 <b>Order Time:</b> ${timestamp}`;
 
                 const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -147,21 +139,27 @@ ${itemsList}
                         chat_id: chatId,
                         text: message,
                         parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    { text: "✅ Confirm Order", callback_data: `confirm_${orderId}` },
+                                    { text: "❌ Cancel", callback_data: `cancel_${orderId}` }
+                                ]
+                            ]
+                        }
                     }),
                 });
 
-                const result = await response.json();
                 if (!response.ok) {
+                    const result = await response.json();
                     console.error('[Order API] Telegram API Error:', JSON.stringify(result));
-                } else {
-                    console.log('[Order API] Telegram notification sent successfully');
                 }
             } catch (error) {
-                console.error('[Order API] Telegram network/logic error:', error);
+                console.error('[Order API] Telegram error:', error);
             }
         };
 
-        // Execute notifications (await ensures Vercel doesn't kill the process early)
+        // Execute notifications
         await Promise.all([
             sendEmail(),
             sendTelegramNotification()
