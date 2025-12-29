@@ -34,7 +34,6 @@ export async function POST(request: Request) {
                 address: address,
                 items: items,
                 total: total, // IQD Total
-                total_usd: totalUSD,
                 status: 'pending'
             }])
             .select('id')
@@ -44,7 +43,7 @@ export async function POST(request: Request) {
             console.error("CRITICAL: Error saving to Supabase:", dbError);
             return NextResponse.json({
                 success: false,
-                error: 'Database save failed. Please try again.'
+                error: `Database error: ${dbError?.message || 'Unknown error'}`
             }, { status: 500 });
         }
 
