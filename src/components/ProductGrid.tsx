@@ -107,15 +107,22 @@ export default function ProductGrid() {
                                         </div>
                                     ) : null}
                                     <button
+                                        disabled={product.stock !== undefined && product.stock <= 0}
                                         onClick={() => {
                                             const result = addToCart(product, product.minOrderQty || 1);
                                             if (!result.success && result.error) {
                                                 alert(result.error);
                                             }
                                         }}
-                                        className="w-full bg-white text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all duration-300 transform active:scale-95 group/btn shadow-lg"
+                                        className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95 group/btn shadow-lg disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed ${product.stock !== undefined && product.stock <= 0 ? 'bg-gray-800 text-gray-500 border border-white/5' : 'bg-white text-black hover:bg-primary hover:text-black'}`}
                                     >
-                                        <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.addToCart}
+                                        {product.stock !== undefined && product.stock <= 0 ? (
+                                            dictionary.products.outOfStock
+                                        ) : (
+                                            <>
+                                                <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" /> {dictionary.products.addToCart}
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </div>
