@@ -32,13 +32,36 @@ const fetchProducts = async (): Promise<Product[]> => {
 };
 
 export default function ProductGrid() {
-    const { data: products, error, isLoading } = useSWR('products', fetchProducts, {
+    const { data: products, error, isLoading, mutate } = useSWR('products', fetchProducts, {
         revalidateOnFocus: false,
         dedupingInterval: 60000, // 1 minute cache
     });
 
     const { showAddToCartModal, lastAddedProduct, addToCart, openOutOfStockModal } = useCartStore();
     const { dictionary } = useLanguage();
+
+    // Enable Real-time listener
+    React.useEffect(() => {
+        const channel = supabase
+            .channel('products-realtime')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*', // Listen for ALL changes (INSERT, UPDATE, DELETE)
+                    schema: 'public',
+                    table: 'products'
+                },
+                () => {
+                    console.log('[Realtime] Products updated, re-fetching...');
+                    mutate(); // Trigger SWR to re-fetch
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [mutate]);
 
     if (error) {
         return (

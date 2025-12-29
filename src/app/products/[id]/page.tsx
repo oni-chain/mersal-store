@@ -37,7 +37,7 @@ const fetchProduct = async (id: string): Promise<Product> => {
 
 export default function ProductPage() {
     const { id } = useParams();
-    const { data: product, error, isLoading } = useSWR<Product>(id ? `product-${id}` : null, () => fetchProduct(id as string), {
+    const { data: product, error, isLoading, mutate } = useSWR<Product>(id ? `product-${id}` : null, () => fetchProduct(id as string), {
         revalidateOnFocus: false,
         dedupingInterval: 60000,
     });
@@ -46,6 +46,32 @@ export default function ProductPage() {
     const { t, language } = useLanguage();
     const [quantity, setQuantity] = React.useState(1);
     const [isPulsing, setIsPulsing] = React.useState(false);
+
+    // Enable Real-time listener for this specific product
+    React.useEffect(() => {
+        if (!id) return;
+
+        const channel = supabase
+            .channel(`product-${id}-realtime`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE', // We mostly care about stock/sold_count updates
+                    schema: 'public',
+                    table: 'products',
+                    filter: `id=eq.${id}`
+                },
+                () => {
+                    console.log(`[Realtime] Product ${id} updated, re-fetching...`);
+                    mutate();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [id, mutate]);
 
     React.useEffect(() => {
         if (product?.minOrderQty) {
