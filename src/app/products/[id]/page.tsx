@@ -189,7 +189,7 @@ export default function ProductPage() {
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    <span className="text-xs font-bold text-gray-400 italic">
+                                                    <span className="text-sm font-black text-white italic">
                                                         {t('products.unitsSold').replace('{qty}', product.soldCount.toString())}
                                                     </span>
                                                 </div>
