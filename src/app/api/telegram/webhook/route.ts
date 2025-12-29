@@ -23,9 +23,25 @@ export async function POST(request: Request) {
         }
 
         // 2. Parse action and ID
-        const [action, orderId] = data.split('_');
-        const newStatus = action === 'confirm' ? 'confirmed' : 'cancelled';
+        const parts = data.split('_');
+        const action = parts[0];
+        const orderId = parts[1];
 
+        if (!orderId) {
+            console.error("[Telegram Webhook] Received empty orderId");
+            await fetch(`https://api.telegram.org/bot${botToken}/answerCallbackQuery`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    callback_query_id: callback_query.id,
+                    text: `❌ Error: Identification failed. Please use the Admin Dashboard.`,
+                    show_alert: true
+                })
+            });
+            return NextResponse.json({ ok: true });
+        }
+
+        const newStatus = action === 'confirm' ? 'confirmed' : 'cancelled';
         console.log(`[Telegram Webhook] ${action} order: ${orderId}`);
 
         // 3. Update Order in Database and update Stock/Sold Count

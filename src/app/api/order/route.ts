@@ -24,29 +24,32 @@ export async function POST(request: Request) {
 
         console.log(`[Email API] Processing order for ${customerName}`);
 
-        // Save Order to Supabase (Critical Path)
+        // Save Order to Supabase (Mandatory Critical Path)
         let orderId = '';
-        try {
-            const { data: newOrder, error: dbError } = await supabase
-                .from('orders')
-                .insert([{
-                    customer_name: customerName,
-                    phone: phone,
-                    address: address,
-                    items: items,
-                    total: total, // IQD Total
-                    total_usd: totalUSD,
-                    status: 'pending'
-                }])
-                .select('id')
-                .single();
+        const { data: newOrder, error: dbError } = await supabase
+            .from('orders')
+            .insert([{
+                customer_name: customerName,
+                phone: phone,
+                address: address,
+                items: items,
+                total: total, // IQD Total
+                total_usd: totalUSD,
+                status: 'pending'
+            }])
+            .select('id')
+            .single();
 
-            if (dbError) throw dbError;
-            orderId = newOrder.id;
-            console.log(`[Email API] Order saved to Supabase: ${orderId}`);
-        } catch (dbError) {
+        if (dbError || !newOrder?.id) {
             console.error("CRITICAL: Error saving to Supabase:", dbError);
+            return NextResponse.json({
+                success: false,
+                error: 'Database save failed. Please try again.'
+            }, { status: 500 });
         }
+
+        orderId = newOrder.id;
+        console.log(`[Order API] Order saved successfully: ${orderId}`);
 
         // Email Notification (Non-blocking / Fail-safe)
         const sendEmail = async () => {
