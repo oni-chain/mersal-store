@@ -255,6 +255,10 @@ export default function ProductPage() {
                                     <button
                                         onClick={() => {
                                             if (product) {
+                                                if (product.stock !== undefined && product.stock <= 0) {
+                                                    alert(t('products.outOfStockMsg'));
+                                                    return;
+                                                }
                                                 if (quantity > (product.stock || 0)) {
                                                     alert(t('products.notEnoughStock'));
                                                     return;
@@ -265,8 +269,7 @@ export default function ProductPage() {
                                                 }
                                             }
                                         }}
-                                        disabled={(product?.stock || 0) <= 0}
-                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:cursor-not-allowed ${activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20'}`}
+                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${product?.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 border border-white/5 hover:bg-gray-700 shadow-none grayscale scale-100'}`}
                                     >
                                         <ShoppingCart className="w-6 h-6" />
                                         {(product?.stock || 0) <= 0 ? t('products.outOfStock') : t('products.addToCart')}

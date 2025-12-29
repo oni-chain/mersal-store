@@ -107,14 +107,17 @@ export default function ProductGrid() {
                                         </div>
                                     ) : null}
                                     <button
-                                        disabled={product.stock !== undefined && product.stock <= 0}
                                         onClick={() => {
+                                            if (product.stock !== undefined && product.stock <= 0) {
+                                                alert(dictionary.products.outOfStockMsg);
+                                                return;
+                                            }
                                             const result = addToCart(product, product.minOrderQty || 1);
                                             if (!result.success && result.error) {
                                                 alert(result.error);
                                             }
                                         }}
-                                        className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95 group/btn shadow-lg disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed ${product.stock !== undefined && product.stock <= 0 ? 'bg-gray-800 text-gray-500 border border-white/5' : 'bg-white text-black hover:bg-primary hover:text-black'}`}
+                                        className={`w-full font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 transform active:scale-95 group/btn shadow-lg ${product.stock !== undefined && product.stock <= 0 ? 'bg-gray-800 text-gray-400 border border-white/5 hover:bg-gray-700' : 'bg-white text-black hover:bg-primary hover:text-black'}`}
                                     >
                                         {product.stock !== undefined && product.stock <= 0 ? (
                                             dictionary.products.outOfStock
