@@ -75,6 +75,36 @@ export default function AdminPage() {
         }
     }, [isAuthenticated, activeTab]);
 
+    // Enable Real-time listeners
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        console.log('[Realtime] Subscribing to changes...');
+        const channel = supabase
+            .channel('admin-realtime')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'orders' },
+                () => {
+                    console.log('[Realtime] Orders update detected, re-fetching...');
+                    if (activeTab === 'orders') fetchData();
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'products' },
+                () => {
+                    console.log('[Realtime] Products update detected, re-fetching...');
+                    if (activeTab === 'products') fetchData();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [isAuthenticated, activeTab]);
+
     const handlePriceIQDChange = (val: string) => {
         const iqd = parseFloat(val) || 0;
         setFormData({
