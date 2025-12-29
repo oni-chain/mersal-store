@@ -29,6 +29,7 @@ const fetchProduct = async (id: string): Promise<Product> => {
         image: data.image_url,
         description: data.description,
         minOrderQty: data.min_order_qty,
+        stock: data.stock,
         priceTiers: data.price_tiers
     };
 };
@@ -140,6 +141,17 @@ export default function ProductPage() {
                                             </div>
                                         </div>
 
+                                        {/* Stock Status */}
+                                        <div className={`p-4 rounded-2xl border flex items-center justify-between ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30') : 'bg-red-500/10 border-red-500/30'}`}>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Status</span>
+                                                <span className={`text-sm font-bold ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
+                                                    {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} (${product.stock} ${t('products.unitsAvailable')})` : `${t('products.inStock')} (${product.stock} ${t('products.unitsAvailable')})`) : t('products.outOfStock')}
+                                                </span>
+                                            </div>
+                                            <div className={`w-3 h-3 rounded-full ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500') : 'bg-red-500'}`} />
+                                        </div>
+
                                         {/* Bulk Savings Section */}
                                         {product?.priceTiers && product.priceTiers.length > 0 && (
                                             <div className="bg-gray-900/50 rounded-3xl border border-white/5 overflow-hidden">
@@ -192,21 +204,27 @@ export default function ProductPage() {
                                             <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-2 gap-3 lg:gap-4 justify-between lg:justify-start">
                                                 <button
                                                     onClick={() => setQuantity(Math.max(product?.minOrderQty || 1, quantity - 1))}
-                                                    className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl lg:text-3xl font-black transition-colors"
+                                                    disabled={(product?.stock || 0) <= 0}
+                                                    className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl lg:text-3xl font-black transition-colors disabled:opacity-20"
                                                 >-</button>
                                                 <input
                                                     type="number"
                                                     value={quantity}
+                                                    disabled={(product?.stock || 0) <= 0}
                                                     onChange={(e) => {
                                                         const val = parseInt(e.target.value);
-                                                        if (!isNaN(val)) setQuantity(Math.max(1, val));
+                                                        if (!isNaN(val)) {
+                                                            const max = product?.stock || 999;
+                                                            setQuantity(Math.min(max, Math.max(1, val)));
+                                                        }
                                                     }}
-                                                    onBlur={() => setQuantity(Math.max(product?.minOrderQty || 1, quantity))}
-                                                    className="w-12 lg:w-24 bg-transparent text-center text-xl lg:text-3xl font-black focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    onBlur={() => setQuantity(Math.min(product?.stock || 999, Math.max(product?.minOrderQty || 1, quantity)))}
+                                                    className="w-12 lg:w-24 bg-transparent text-center text-xl lg:text-3xl font-black focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-20"
                                                 />
                                                 <button
-                                                    onClick={() => setQuantity(quantity + 1)}
-                                                    className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl lg:text-3xl font-black transition-colors"
+                                                    onClick={() => setQuantity(Math.min(product?.stock || 999, quantity + 1))}
+                                                    disabled={(product?.stock || 0) <= 0 || quantity >= (product?.stock || 0)}
+                                                    className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl lg:text-3xl font-black transition-colors disabled:opacity-20"
                                                 >+</button>
                                             </div>
                                             <div className={`flex-1 px-5 py-4 lg:px-8 lg:py-4 rounded-2xl border flex flex-col justify-center transition-all duration-300 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-primary/5 border-primary/10'}`}>
@@ -219,16 +237,21 @@ export default function ProductPage() {
                                     <button
                                         onClick={() => {
                                             if (product) {
+                                                if (quantity > (product.stock || 0)) {
+                                                    alert(t('products.notEnoughStock'));
+                                                    return;
+                                                }
                                                 const result = addToCart(product, quantity);
                                                 if (!result.success && result.error) {
                                                     alert(result.error);
                                                 }
                                             }
                                         }}
-                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20'}`}
+                                        disabled={(product?.stock || 0) <= 0}
+                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:cursor-not-allowed ${activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20'}`}
                                     >
                                         <ShoppingCart className="w-6 h-6" />
-                                        {t('products.addToCart')}
+                                        {(product?.stock || 0) <= 0 ? t('products.outOfStock') : t('products.addToCart')}
                                     </button>
                                 </div>
                             </>

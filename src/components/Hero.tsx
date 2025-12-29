@@ -22,8 +22,15 @@ export default function Hero() {
                 </p>
                 <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
                     <button
-                        onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="bg-primary text-white font-bold py-4 px-12 rounded-full hover:bg-blue-600 hover:scale-105 transition-all shadow-lg hover:shadow-primary/25"
+                        onClick={() => {
+                            const productsSection = document.getElementById('products');
+                            if (productsSection) {
+                                productsSection.scrollIntoView({ behavior: 'smooth' });
+                            } else {
+                                window.scrollTo({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+                            }
+                        }}
+                        className="bg-primary text-white font-bold py-4 px-12 rounded-full hover:bg-blue-600 hover:scale-105 transition-all shadow-lg hover:shadow-primary/25 active:scale-95"
                     >
                         {dictionary.hero.cta}
                     </button>

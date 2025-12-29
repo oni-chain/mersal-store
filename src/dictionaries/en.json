@@ -30,7 +30,11 @@
         "quantity": "Quantity",
         "savings": "Savings",
         "bulkSavings": "Bulk Savings",
-        "viewDetails": "Click to view details"
+        "viewDetails": "Click to view details",
+        "inStock": "In Stock",
+        "limitedStock": "Limited Stock",
+        "unitsAvailable": "Units available",
+        "notEnoughStock": "Not enough stock available"
     },
     "cart": {
         "title": "Your Loadout",

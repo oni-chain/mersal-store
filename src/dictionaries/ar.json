@@ -30,7 +30,11 @@
         "quantity": "الكمية",
         "savings": "توفير",
         "bulkSavings": "توفير الجملة",
-        "viewDetails": "اضغط لعرض التفاصيل"
+        "viewDetails": "اضغط لعرض التفاصيل",
+        "inStock": "متوفر",
+        "limitedStock": "كمية محدودة",
+        "unitsAvailable": "قطع متوفرة",
+        "notEnoughStock": "الكمية المطلوبة غير متوفرة"
     },
     "cart": {
         "title": "سلتك",

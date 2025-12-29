@@ -8,6 +8,7 @@ export interface Product {
     image: string;
     description?: string;
     minOrderQty?: number;
+    stock?: number;
     priceTiers?: { min_qty: number; price_iqd: number }[];
 }
 

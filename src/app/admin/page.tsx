@@ -25,6 +25,7 @@ export default function AdminPage() {
         priceIQD: '',
         image_url: '',
         minOrderQty: '1',
+        stock: '0',
         priceTiers: [] as { min_qty: number; price_iqd: number }[]
     });
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -119,6 +120,7 @@ export default function AdminPage() {
                 price_iqd: parseFloat(formData.priceIQD),
                 image_url: imageUrl,
                 min_order_qty: parseInt(formData.minOrderQty) || 1,
+                stock: parseInt(formData.stock) || 0,
                 price_tiers: formData.priceTiers,
             };
 
@@ -137,7 +139,7 @@ export default function AdminPage() {
 
             setIsFormOpen(false);
             setEditingProduct(null);
-            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', priceTiers: [] });
+            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', stock: '0', priceTiers: [] });
             setImageFile(null);
             fetchData();
             alert(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
@@ -158,6 +160,7 @@ export default function AdminPage() {
             priceIQD: (product.price_iqd || (product.price * EXCHANGE_RATE)).toString(),
             image_url: product.image_url,
             minOrderQty: (product.min_order_qty || 1).toString(),
+            stock: (product.stock || 0).toString(),
             priceTiers: product.price_tiers || []
         });
         setIsFormOpen(true);
@@ -190,6 +193,56 @@ export default function AdminPage() {
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         setUpdating(orderId);
         try {
+            const order = orders.find(o => o.id === orderId);
+            const oldStatus = order?.status;
+
+            // Stock Reduction Logic: Triggered when status changes to 'confirmed'
+            if (newStatus === 'confirmed' && oldStatus !== 'confirmed' && order.items) {
+                for (const item of order.items) {
+                    // Fetch latest stock to ensure accuracy and prevent race conditions
+                    const { data: product, error: fetchError } = await supabase
+                        .from('products')
+                        .select('stock')
+                        .eq('id', item.id)
+                        .single();
+
+                    if (fetchError || !product) {
+                        console.error(`Failed to fetch stock for product ${item.id}`);
+                        continue;
+                    }
+
+                    const newStock = Math.max(0, (product.stock || 0) - item.quantity);
+
+                    const { error: stockError } = await supabase
+                        .from('products')
+                        .update({ stock: newStock })
+                        .eq('id', item.id);
+
+                    if (stockError) {
+                        console.error(`Failed to update stock for product ${item.id}`);
+                    }
+                }
+            }
+            // Stock Restoration Logic: Triggered when status changes FROM 'confirmed' to something else (e.g. cancelled)
+            else if (oldStatus === 'confirmed' && newStatus !== 'confirmed' && order.items) {
+                for (const item of order.items) {
+                    const { data: product, error: fetchError } = await supabase
+                        .from('products')
+                        .select('stock')
+                        .eq('id', item.id)
+                        .single();
+
+                    if (fetchError || !product) continue;
+
+                    const newStock = (product.stock || 0) + item.quantity;
+
+                    await supabase
+                        .from('products')
+                        .update({ stock: newStock })
+                        .eq('id', item.id);
+                }
+            }
+
             const { error } = await supabase
                 .from('orders')
                 .update({ status: newStatus })
@@ -197,7 +250,13 @@ export default function AdminPage() {
 
             if (error) throw error;
             setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+
+            // Re-fetch products if stock might have changed
+            if ((newStatus === 'confirmed' && oldStatus !== 'confirmed') || (oldStatus === 'confirmed' && newStatus !== 'confirmed')) {
+                fetchData();
+            }
         } catch (error) {
+            console.error("Update error:", error);
             alert('Failed to update status');
         } finally {
             setUpdating(null);
@@ -350,7 +409,7 @@ export default function AdminPage() {
                                 <button
                                     onClick={() => {
                                         setEditingProduct(null);
-                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', priceTiers: [] });
+                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', stock: '0', priceTiers: [] });
                                         setIsFormOpen(true);
                                     }}
                                     className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-gray-500 hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2 group"
@@ -384,14 +443,14 @@ export default function AdminPage() {
                                             <div className="p-6 space-y-3 flex-grow">
                                                 <h3 className="text-xl font-bold truncate">{product.name}</h3>
                                                 <p className="text-gray-500 text-sm line-clamp-2 h-10">{product.description || 'No description provided.'}</p>
-                                                <div className="flex items-center justify-between pt-4">
+                                                <div className="flex items-center justify-between pt-4 border-t border-white/5">
                                                     <div className="space-y-1">
-                                                        <p className="text-xs text-gray-600 font-bold uppercase">USD Entry</p>
-                                                        <p className="text-xl font-black text-white">${product.price}</p>
+                                                        <p className="text-xs text-gray-600 font-bold uppercase">Price</p>
+                                                        <p className="text-xl font-black text-white">{Math.round(product.price_iqd || (product.price * EXCHANGE_RATE)).toLocaleString()} <span className="text-[10px]">IQD</span></p>
                                                     </div>
                                                     <div className="text-right space-y-1">
-                                                        <p className="text-xs text-gray-600 font-bold uppercase">IQD Entry</p>
-                                                        <p className="text-xl font-black text-primary">{Math.round(product.price_iqd || (product.price * EXCHANGE_RATE)).toLocaleString()}</p>
+                                                        <p className="text-xs text-gray-600 font-bold uppercase">Availability</p>
+                                                        <p className={`text-xl font-black ${product.stock > 0 ? 'text-emerald-500' : 'text-red-500'}`}>{product.stock || 0} <span className="text-[10px]">UNITS</span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -532,18 +591,31 @@ export default function AdminPage() {
                                         )}
                                     </div>
 
-                                    <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Minimum Order Quantity (MOQ)</label>
-                                        <input
-                                            required
-                                            type="number"
-                                            min="1"
-                                            value={formData.minOrderQty}
-                                            onChange={(e) => setFormData({ ...formData, minOrderQty: e.target.value })}
-                                            className="w-full bg-black border border-white/10 rounded-xl p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                                            placeholder="1"
-                                        />
-                                        <p className="text-xs text-gray-600 mt-1">Minimum units customers must order</p>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Min Order (MOQ)</label>
+                                            <input
+                                                required
+                                                type="number"
+                                                min="1"
+                                                value={formData.minOrderQty}
+                                                onChange={(e) => setFormData({ ...formData, minOrderQty: e.target.value })}
+                                                className="w-full bg-black border border-white/10 rounded-xl p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                                                placeholder="1"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Current Stock</label>
+                                            <input
+                                                required
+                                                type="number"
+                                                min="0"
+                                                value={formData.stock}
+                                                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                                                className="w-full bg-black border border-white/10 rounded-xl p-3 text-emerald-500 font-bold focus:border-primary focus:outline-none transition-colors"
+                                                placeholder="0"
+                                            />
+                                        </div>
                                     </div>
 
                                     <div>

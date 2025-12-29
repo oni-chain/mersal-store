@@ -23,7 +23,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     <Link href="/" className="flex-shrink-0 cursor-pointer">
-                        <span className="text-3xl font-bold tracking-tighter text-white font-cairo">
+                        <span className="text-2xl sm:text-3xl font-bold tracking-tighter text-white font-cairo">
                             {t('hero.title')}<span className="text-secondary">.</span>
                         </span>
                     </Link>
@@ -32,12 +32,12 @@ export default function Navbar() {
                         {/* Links removed as requested */}
                     </div>
 
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-3 md:gap-6">
                         <a
                             href="https://wa.me/9647708511364"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                            className="hidden md:flex bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-4 py-1.5 rounded-full text-xs font-black items-center gap-2 hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
                         >
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -48,7 +48,7 @@ export default function Navbar() {
 
                         <button
                             onClick={toggleLanguage}
-                            className="text-gray-300 hover:text-white transition-colors text-sm font-bold flex items-center gap-1"
+                            className="text-gray-300 hover:text-white transition-colors text-xs md:text-sm font-bold flex items-center gap-1"
                         >
                             <Globe className="w-4 h-4" />
                             {language === 'en' ? 'AR' : 'EN'}
@@ -58,19 +58,17 @@ export default function Navbar() {
                             onClick={toggleCart}
                             className="relative p-2 text-gray-300 hover:text-white transition-colors"
                         >
-                            <ShoppingCart className="w-6 h-6" />
+                            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6" />
                             {itemCount > 0 && (
-                                <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 bg-primary text-white text-xs font-bold rounded-full">
+                                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 md:w-5 md:h-5 bg-primary text-white text-[10px] md:text-xs font-bold rounded-full">
                                     {itemCount}
                                 </span>
                             )}
                         </button>
 
-                        <div className="md:hidden">
-                            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white hover:text-secondary transition-colors">
-                                <Menu className="w-6 h-6" />
-                            </button>
-                        </div>
+                        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-white hover:text-secondary transition-colors p-1">
+                            <Menu className="w-6 h-6" />
+                        </button>
                     </div>
                 </div>
             </div>
