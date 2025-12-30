@@ -97,6 +97,20 @@ export default function AddToCartModal() {
                             </div>
                         </div>
 
+                        {/* Basket Discount Logic Invite */}
+                        {useCartStore.getState().globalTieredPricing && items.length > 0 && !activeTier && (
+                            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-8 animate-in slide-in-from-bottom-2 duration-500">
+                                <div className="flex items-start gap-3">
+                                    <div className="bg-primary/20 p-2 rounded-lg">
+                                        <ShoppingCart className="w-4 h-4 text-primary" />
+                                    </div>
+                                    <p className="text-[11px] font-bold text-gray-300 leading-relaxed font-cairo">
+                                        {t('cart.basketDiscountInvite')}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Action Buttons */}
                         <div className="grid gap-4">
                             <button
