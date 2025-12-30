@@ -128,20 +128,25 @@ export default function Cart() {
                                                     const diff = nextTierQty - totalQty;
                                                     return (
                                                         <div className="flex flex-col gap-4">
-                                                            <div className="flex justify-between items-end">
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-xs font-black text-primary uppercase tracking-widest leading-none mb-1">
+                                                            <div className="flex justify-between items-start">
+                                                                <div className="flex flex-col flex-1">
+                                                                    <span className="text-sm font-black text-primary uppercase tracking-widest leading-none mb-2">
                                                                         {t('cart.basketDiscountProgress')}
                                                                     </span>
-                                                                    <p className="text-xs text-gray-400 font-bold">
+                                                                    <p className="text-lg text-white font-bold leading-tight font-cairo">
                                                                         {t('cart.addMoreItems').replace('{count}', diff.toString())}
                                                                     </p>
                                                                 </div>
-                                                                <span className="text-xl font-black text-white shrink-0 leading-none">
-                                                                    {totalQty} <span className="text-[10px] text-gray-500">/ {nextTierQty}</span>
-                                                                </span>
+                                                                <div className="flex flex-col items-end shrink-0">
+                                                                    <span className="text-4xl font-black text-primary leading-none">
+                                                                        {totalQty}
+                                                                    </span>
+                                                                    <span className="text-xs text-gray-500 font-bold mt-1">
+                                                                        / {nextTierQty}
+                                                                    </span>
+                                                                </div>
                                                             </div>
-                                                            <div className="h-4 w-full bg-white/5 rounded-full p-1 border border-white/10 relative overflow-hidden">
+                                                            <div className="h-6 w-full bg-white/5 rounded-full p-1.5 border border-white/10 relative overflow-hidden">
                                                                 <div
                                                                     className="h-full bg-gradient-to-r from-primary to-cyan-400 rounded-full shadow-[0_0_20px_rgba(0,212,255,0.6)] transition-all duration-1000 ease-out"
                                                                     style={{ width: `${Math.min(100, (totalQty / nextTierQty) * 100)}%` }}
