@@ -113,7 +113,7 @@ export default function Cart() {
                                 <div className="space-y-6">
                                     {/* Global Tier Progress */}
                                     {useCartStore.getState().globalTieredPricing && items.length > 0 && (
-                                        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-4">
+                                        <div className="bg-primary/10 border-2 border-primary/30 rounded-3xl p-6 mb-8 shadow-[0_0_30px_rgba(0,212,255,0.1)]">
                                             {(() => {
                                                 const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
                                                 // Find the next available tier across all items
@@ -127,27 +127,37 @@ export default function Cart() {
                                                 if (nextTierQty !== Infinity) {
                                                     const diff = nextTierQty - totalQty;
                                                     return (
-                                                        <div className="flex flex-col gap-2">
-                                                            <div className="flex justify-between items-center">
-                                                                <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Basket Discount Progress</span>
-                                                                <span className="text-[10px] font-bold text-gray-400">{totalQty} / {nextTierQty} items</span>
+                                                        <div className="flex flex-col gap-4">
+                                                            <div className="flex justify-between items-end">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-xs font-black text-primary uppercase tracking-widest leading-none mb-1">
+                                                                        {t('cart.basketDiscountProgress')}
+                                                                    </span>
+                                                                    <p className="text-xs text-gray-400 font-bold">
+                                                                        {t('cart.addMoreItems').replace('{count}', diff.toString())}
+                                                                    </p>
+                                                                </div>
+                                                                <span className="text-xl font-black text-white shrink-0 leading-none">
+                                                                    {totalQty} <span className="text-[10px] text-gray-500">/ {nextTierQty}</span>
+                                                                </span>
                                                             </div>
-                                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                            <div className="h-4 w-full bg-white/5 rounded-full p-1 border border-white/10 relative overflow-hidden">
                                                                 <div
-                                                                    className="h-full bg-primary shadow-[0_0_10px_rgba(0,212,255,0.5)] transition-all duration-500"
-                                                                    style={{ width: `${(totalQty / nextTierQty) * 100}%` }}
+                                                                    className="h-full bg-gradient-to-r from-primary to-cyan-400 rounded-full shadow-[0_0_20px_rgba(0,212,255,0.6)] transition-all duration-1000 ease-out"
+                                                                    style={{ width: `${Math.min(100, (totalQty / nextTierQty) * 100)}%` }}
                                                                 />
+                                                                {/* Animated light effect */}
+                                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-1/4 h-full animate-shimmer" style={{ left: '-100%' }} />
                                                             </div>
-                                                            <p className="text-[10px] text-gray-500 font-bold">
-                                                                Add <span className="text-primary">{diff}</span> more item{diff > 1 ? 's' : ''} to unlock better wholesale prices for <span className="text-white">EVERYTHING</span> in your cart!
-                                                            </p>
                                                         </div>
                                                     );
                                                 }
                                                 return (
-                                                    <div className="flex items-center gap-2 text-emerald-500">
-                                                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Maximum Wholesale Discount Applied!</span>
+                                                    <div className="flex items-center gap-3 text-emerald-500 py-2">
+                                                        <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
+                                                        <span className="text-sm font-black uppercase tracking-widest">
+                                                            {t('cart.maxWholesaleReached')}
+                                                        </span>
                                                     </div>
                                                 );
                                             })()}
