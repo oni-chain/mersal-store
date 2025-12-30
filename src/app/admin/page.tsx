@@ -15,6 +15,8 @@ export default function AdminPage() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [updating, setUpdating] = useState<string | null>(null);
+    const [globalTieredPricing, setGlobalTieredPricing] = useState(false);
+    const [isSettingsLoading, setIsSettingsLoading] = useState(false);
 
     // Form states
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -38,6 +40,39 @@ export default function AdminPage() {
             setIsAuthenticated(true);
         } else {
             alert('Incorrect Password');
+        }
+    };
+
+    const fetchSettings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('settings')
+                .select('value')
+                .eq('key', 'global_tiered_pricing')
+                .single();
+            if (error) throw error;
+            if (data) setGlobalTieredPricing(data.value.enabled);
+        } catch (error) {
+            console.error("Error fetching settings:", error);
+        }
+    };
+
+    const toggleGlobalPricing = async () => {
+        setIsSettingsLoading(true);
+        const newValue = !globalTieredPricing;
+        try {
+            const { error } = await supabase
+                .from('settings')
+                .update({ value: { enabled: newValue } })
+                .eq('key', 'global_tiered_pricing');
+
+            if (error) throw error;
+            setGlobalTieredPricing(newValue);
+        } catch (error) {
+            console.error("Error updating settings:", error);
+            alert("Failed to update pricing policy.");
+        } finally {
+            setIsSettingsLoading(false);
         }
     };
 
@@ -72,6 +107,7 @@ export default function AdminPage() {
     useEffect(() => {
         if (isAuthenticated) {
             fetchData();
+            fetchSettings();
         }
     }, [isAuthenticated, activeTab]);
 
@@ -292,6 +328,21 @@ export default function AdminPage() {
                             <h1 className="text-3xl font-bold tracking-tight">Admin <span className="text-primary">Console</span></h1>
                             <p className="text-gray-500 text-sm">Supabase Sync Live</p>
                         </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/5">
+                        <div className="flex flex-col text-right sm:text-left">
+                            <span className="text-xs font-black text-primary uppercase tracking-tighter">Basket Discount System</span>
+                            <span className="text-[10px] text-gray-400 font-bold">{globalTieredPricing ? 'ENABLED (Bulk logic applies to whole cart)' : 'DISABLED (Per-product logic)'}</span>
+                        </div>
+                        <button
+                            onClick={toggleGlobalPricing}
+                            disabled={isSettingsLoading}
+                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${globalTieredPricing ? 'bg-primary' : 'bg-gray-700'} ${isSettingsLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-all duration-500 ${globalTieredPricing ? 'translate-x-7 shadow-[0_0_10px_rgba(255,255,255,0.8)]' : ''}`} />
+                            {isSettingsLoading && <Loader2 className="w-3 h-3 animate-spin text-black absolute inset-0 m-auto" />}
+                        </button>
                     </div>
 
                     <div className="flex items-center gap-4">

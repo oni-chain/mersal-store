@@ -111,9 +111,55 @@ export default function Cart() {
                                 </div>
                             ) : (
                                 <div className="space-y-6">
+                                    {/* Global Tier Progress */}
+                                    {useCartStore.getState().globalTieredPricing && items.length > 0 && (
+                                        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-4">
+                                            {(() => {
+                                                const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
+                                                // Find the next available tier across all items
+                                                let nextTierQty = Infinity;
+                                                items.forEach(item => {
+                                                    const tiers = item.priceTiers || [];
+                                                    const next = tiers.find(t => t.min_qty > totalQty);
+                                                    if (next && next.min_qty < nextTierQty) nextTierQty = next.min_qty;
+                                                });
+
+                                                if (nextTierQty !== Infinity) {
+                                                    const diff = nextTierQty - totalQty;
+                                                    return (
+                                                        <div className="flex flex-col gap-2">
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Basket Discount Progress</span>
+                                                                <span className="text-[10px] font-bold text-gray-400">{totalQty} / {nextTierQty} items</span>
+                                                            </div>
+                                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className="h-full bg-primary shadow-[0_0_10px_rgba(0,212,255,0.5)] transition-all duration-500"
+                                                                    style={{ width: `${(totalQty / nextTierQty) * 100}%` }}
+                                                                />
+                                                            </div>
+                                                            <p className="text-[10px] text-gray-500 font-bold">
+                                                                Add <span className="text-primary">{diff}</span> more item{diff > 1 ? 's' : ''} to unlock better wholesale prices for <span className="text-white">EVERYTHING</span> in your cart!
+                                                            </p>
+                                                        </div>
+                                                    );
+                                                }
+                                                return (
+                                                    <div className="flex items-center gap-2 text-emerald-500">
+                                                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter">Maximum Wholesale Discount Applied!</span>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
+                                    )}
+
                                     {items.map((item) => {
-                                        const unitPrice = getPriceAtQuantity(item, item.quantity);
-                                        const isWholesale = item.priceTiers?.some(t => item.quantity >= t.min_qty);
+                                        const globalPricing = useCartStore.getState().globalTieredPricing;
+                                        const totalQty = items.reduce((sum, i) => sum + i.quantity, 0);
+                                        const pricingQty = globalPricing ? totalQty : item.quantity;
+                                        const unitPrice = getPriceAtQuantity(item, pricingQty);
+                                        const isWholesale = item.priceTiers?.some(t => pricingQty >= t.min_qty);
 
                                         return (
                                             <div key={item.id} className={`flex gap-4 p-4 rounded-xl border transition-all duration-300 ${isWholesale ? 'bg-emerald-500/5 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.05)]' : 'bg-[#1a1a1a] border-white/5'}`}>

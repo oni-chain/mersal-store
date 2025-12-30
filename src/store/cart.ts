@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { supabase } from '@/lib/supabase';
 
 export interface Product {
     id: string;
@@ -23,6 +24,8 @@ interface CartState {
     showAddToCartModal: boolean;
     showOutOfStockModal: boolean;
     lastAddedProduct: Product | null;
+    globalTieredPricing: boolean;
+    fetchSettings: () => Promise<void>;
     addToCart: (product: Product, quantity?: number) => { success: boolean; error?: string };
     removeFromCart: (productId: string) => void;
     updateQuantity: (productId: string, quantity: number) => void;
@@ -52,12 +55,28 @@ export const useCartStore = create<CartState>((set, get) => ({
     showAddToCartModal: false,
     showOutOfStockModal: false,
     lastAddedProduct: null,
+    globalTieredPricing: false,
+
+    fetchSettings: async () => {
+        try {
+            const { data, error } = await supabase
+                .from('settings')
+                .select('value')
+                .eq('key', 'global_tiered_pricing')
+                .single();
+            if (data) {
+                set({ globalTieredPricing: data.value.enabled });
+            }
+        } catch (error) {
+            console.error("CartStore: Error fetching settings:", error);
+        }
+    },
 
     addToCart: (product, quantity = 1) => {
+        // ... (unchanged)
         const minQty = product.minOrderQty || 1;
         const stock = product.stock ?? 999;
 
-        // Validate MOQ
         if (quantity < minQty) {
             return {
                 success: false,
@@ -69,7 +88,6 @@ export const useCartStore = create<CartState>((set, get) => ({
         const existingItem = state.items.find(item => item.id === product.id);
         const currentQty = existingItem?.quantity || 0;
 
-        // Validate Stock
         if (currentQty + quantity > stock) {
             return {
                 success: false,
@@ -120,7 +138,13 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     clearCart: () => set({ items: [] }),
 
-    toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+    toggleCart: () => {
+        const { isOpen } = get();
+        if (!isOpen) {
+            get().fetchSettings();
+        }
+        set({ isOpen: !isOpen });
+    },
 
     openOutOfStockModal: (product) => set({
         showOutOfStockModal: true,
@@ -134,17 +158,23 @@ export const useCartStore = create<CartState>((set, get) => ({
     }),
 
     getCartTotal: () => {
-        const { items } = get();
+        const { items, globalTieredPricing } = get();
+        const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
         return items.reduce((total, item) => {
-            const unitPrice = getPriceAtQuantity(item, item.quantity) / 1450;
+            const pricingQty = globalTieredPricing ? totalQuantity : item.quantity;
+            const unitPrice = getPriceAtQuantity(item, pricingQty) / 1450;
             return total + unitPrice * item.quantity;
         }, 0);
     },
 
     getCartTotalIQD: () => {
-        const { items } = get();
+        const { items, globalTieredPricing } = get();
+        const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+
         return items.reduce((total, item) => {
-            const unitPrice = getPriceAtQuantity(item, item.quantity);
+            const pricingQty = globalTieredPricing ? totalQuantity : item.quantity;
+            const unitPrice = getPriceAtQuantity(item, pricingQty);
             return total + unitPrice * item.quantity;
         }, 0);
     }
