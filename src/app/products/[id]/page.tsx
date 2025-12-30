@@ -233,8 +233,8 @@ export default function ProductPage() {
                                                                                 </span>
                                                                             )}
                                                                         </div>
-                                                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-emerald-400' : 'opacity-40'}`}>
-                                                                            {!isActive ? t('products.clickToApply') : t('products.wholesale')}
+                                                                        <span className={`text-[10px] font-black uppercase tracking-widest ${isActive ? 'text-emerald-400' : 'text-primary/80 animate-pulse'}`}>
+                                                                            {!isActive ? `● ${t('products.clickToApply')}` : t('products.wholesale')}
                                                                         </span>
                                                                     </div>
                                                                 </div>

@@ -41,7 +41,7 @@
         "whatsapp": "WhatsApp",
         "notEnoughStock": "Not enough stock available",
         "maxStockReached": "Maximum available stock reached",
-        "clickToApply": "Click to apply"
+        "clickToApply": "Click to activate discount"
     },
     "cart": {
         "title": "Your Loadout",
