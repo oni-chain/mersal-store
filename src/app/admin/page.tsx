@@ -34,7 +34,7 @@ export default function AdminPage() {
 
     const checkPassword = (e: React.FormEvent) => {
         e.preventDefault();
-        if (password === 'admin123') {
+        if (password === 'alialicomkilli1122') {
             setIsAuthenticated(true);
         } else {
             alert('Incorrect Password');
