@@ -220,19 +220,22 @@ export default function ProductPage() {
                                                                     : 'bg-white/2 border-white/5 text-gray-400 hover:border-primary/50 hover:bg-primary/5'
                                                                     }`}
                                                             >
-                                                                {isHighestTier && (
-                                                                    <div className="absolute -right-8 -top-8 w-20 h-20 bg-primary/20 rotate-45 flex items-end justify-center pb-2">
-                                                                        <span className="text-[8px] font-black text-primary uppercase -rotate-90 origin-bottom tracking-tighter">BEST VALUE</span>
-                                                                    </div>
-                                                                )}
-
                                                                 <div className="flex items-center gap-4">
-                                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-colors ${isActive ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-500 group-hover:bg-primary group-hover:text-black'}`}>
+                                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-300 ${isActive ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-500 group-hover:bg-primary group-hover:text-black group-hover:scale-110'}`}>
                                                                         {tier.min_qty}+
                                                                     </div>
                                                                     <div className="flex flex-col text-right lg:text-left">
-                                                                        <span className="text-xl font-black">{tier.min_qty} {t('products.quantity')}</span>
-                                                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-emerald-400' : 'opacity-40'}`}>{t('products.wholesale')}</span>
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="text-xl font-black">{tier.min_qty} {t('products.quantity')}</span>
+                                                                            {isHighestTier && (
+                                                                                <span className="bg-primary/20 text-primary text-[8px] font-black px-2 py-0.5 rounded-full border border-primary/30 uppercase tracking-tighter">
+                                                                                    {t('products.bulkDiscount')}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-emerald-400' : 'opacity-40'}`}>
+                                                                            {!isActive ? t('products.clickToApply') : t('products.wholesale')}
+                                                                        </span>
                                                                     </div>
                                                                 </div>
 
@@ -242,7 +245,7 @@ export default function ProductPage() {
                                                                         <span className="text-xs font-bold">IQD</span>
                                                                     </div>
                                                                     {isActive && (
-                                                                        <span className="text-[10px] font-bold uppercase animate-bounce mt-1">✓ {t('cart.wholesalePriceApplied')}</span>
+                                                                        <span className="text-[10px] font-bold uppercase animate-bounce mt-1 text-emerald-500">✓ {t('cart.wholesalePriceApplied')}</span>
                                                                     )}
                                                                 </div>
                                                             </button>

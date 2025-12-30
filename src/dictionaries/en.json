@@ -40,7 +40,8 @@
         "call": "Call",
         "whatsapp": "WhatsApp",
         "notEnoughStock": "Not enough stock available",
-        "maxStockReached": "Maximum available stock reached"
+        "maxStockReached": "Maximum available stock reached",
+        "clickToApply": "Click to apply"
     },
     "cart": {
         "title": "Your Loadout",

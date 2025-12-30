@@ -40,7 +40,8 @@
         "call": "اتصال",
         "whatsapp": "واتساب",
         "notEnoughStock": "الكمية المطلوبة غير متوفرة",
-        "maxStockReached": "لقد وصلت للحد الأقصى المتوفر"
+        "maxStockReached": "لقد وصلت للحد الأقصى المتوفر",
+        "clickToApply": "اضغط للتطبيق"
     },
     "cart": {
         "title": "سلتك",
