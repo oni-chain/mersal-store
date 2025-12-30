@@ -104,25 +104,35 @@ export default function AddToCartModal() {
                         </div>
 
                         {/* Basket Discount Logic Invite - Maximized Prominence */}
-                        {globalTieredPricing && items.length > 0 && !activeTier && (
-                            <div className="bg-primary/10 border-2 border-primary/40 rounded-[2rem] p-6 mb-8 animate-in slide-in-from-bottom-4 duration-700 shadow-[0_0_40px_rgba(0,212,255,0.15)] relative overflow-hidden group">
-                                {/* Animated background glow */}
-                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                <div className="flex flex-col items-center text-center gap-4 relative z-10">
-                                    <div className="bg-primary shadow-[0_0_20px_rgba(0,212,255,0.4)] p-3 rounded-2xl rotate-3">
-                                        <ShoppingCart className="w-6 h-6 text-black" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="text-lg md:text-xl font-black text-white leading-tight font-cairo">
-                                            {t('cart.basketDiscountInvite')}
-                                        </p>
-                                        <div className="flex justify-center">
-                                            <div className="h-1 w-12 bg-primary/40 rounded-full" />
+                        {(() => {
+                            const totalQty = items.reduce((sum, i) => sum + i.quantity, 0);
+                            const isAnyWholesaleActive = items.some(item =>
+                                item.priceTiers?.some(tier => totalQty >= tier.min_qty)
+                            );
+
+                            if (globalTieredPricing && items.length > 0 && !isAnyWholesaleActive) {
+                                return (
+                                    <div className="bg-primary/10 border-2 border-primary/40 rounded-[2rem] p-6 mb-8 animate-in slide-in-from-bottom-4 duration-700 shadow-[0_0_40px_rgba(0,212,255,0.15)] relative overflow-hidden group">
+                                        {/* Animated background glow */}
+                                        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                        <div className="flex flex-col items-center text-center gap-4 relative z-10">
+                                            <div className="bg-primary shadow-[0_0_20px_rgba(0,212,255,0.4)] p-3 rounded-2xl rotate-3">
+                                                <ShoppingCart className="w-6 h-6 text-black" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <p className="text-lg md:text-xl font-black text-white leading-tight font-cairo">
+                                                    {t('cart.basketDiscountInvite')}
+                                                </p>
+                                                <div className="flex justify-center">
+                                                    <div className="h-1 w-12 bg-primary/40 rounded-full" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        )}
+                                );
+                            }
+                            return null;
+                        })()}
 
                         {/* Action Buttons */}
                         <div className="grid gap-4">
