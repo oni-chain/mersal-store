@@ -198,27 +198,56 @@ export default function ProductPage() {
 
                                         {/* Bulk Savings Section */}
                                         {product?.priceTiers && product.priceTiers.length > 0 && (
-                                            <div className="bg-gray-900/50 rounded-3xl border border-white/5 overflow-hidden">
-                                                <div className="bg-white/5 px-6 py-3 border-b border-white/5 flex justify-between items-center">
-                                                    <span className="text-xs font-black uppercase text-primary tracking-widest">{t('products.bulkSavings')}</span>
-                                                    <span className="text-[10px] text-gray-500 font-bold uppercase">{t('products.buyMoreSaveMore')}</span>
+                                            <div className="bg-gray-900/50 rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
+                                                <div className="bg-gradient-to-r from-primary/20 to-transparent px-6 py-4 border-b border-white/5 flex justify-between items-center group animate-pulse">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-2 h-2 rounded-full bg-primary" />
+                                                        <span className="text-sm font-black uppercase text-primary tracking-widest">{t('products.bulkSavings')}</span>
+                                                    </div>
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase italic">{t('products.buyMoreSaveMore')}</span>
                                                 </div>
-                                                <div className="p-4 grid grid-cols-1 gap-2">
-                                                    {product.priceTiers.map((tier, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            className={`flex items-center justify-between px-6 py-4 rounded-xl border transition-all ${quantity >= tier.min_qty ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.02] shadow-lg' : 'bg-white/2 border-white/5 text-gray-400 opacity-60'}`}
-                                                        >
-                                                            <div className="flex flex-col">
-                                                                <span className="text-lg font-black">{tier.min_qty}+ {t('products.quantity')}</span>
-                                                                <span className="text-[10px] font-bold uppercase opacity-60">{t('products.wholesale')}</span>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                <span className="text-2xl font-black">{tier.price_iqd.toLocaleString()}</span>
-                                                                <span className="ml-1 text-xs font-bold">IQD</span>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                <div className="p-4 flex flex-col gap-3">
+                                                    {product.priceTiers.map((tier, idx) => {
+                                                        const isHighestTier = idx === product.priceTiers!.length - 1;
+                                                        const isActive = quantity >= tier.min_qty;
+                                                        return (
+                                                            <button
+                                                                type="button"
+                                                                key={idx}
+                                                                onClick={() => setQuantity(tier.min_qty)}
+                                                                className={`flex items-center justify-between px-6 py-5 rounded-2xl border-2 transition-all duration-500 relative group overflow-hidden ${isActive
+                                                                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.02] shadow-[0_0_30px_rgba(16,185,129,0.2)]'
+                                                                    : 'bg-white/2 border-white/5 text-gray-400 hover:border-primary/50 hover:bg-primary/5'
+                                                                    }`}
+                                                            >
+                                                                {isHighestTier && (
+                                                                    <div className="absolute -right-8 -top-8 w-20 h-20 bg-primary/20 rotate-45 flex items-end justify-center pb-2">
+                                                                        <span className="text-[8px] font-black text-primary uppercase -rotate-90 origin-bottom tracking-tighter">BEST VALUE</span>
+                                                                    </div>
+                                                                )}
+
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-colors ${isActive ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-500 group-hover:bg-primary group-hover:text-black'}`}>
+                                                                        {tier.min_qty}+
+                                                                    </div>
+                                                                    <div className="flex flex-col text-right lg:text-left">
+                                                                        <span className="text-xl font-black">{tier.min_qty} {t('products.quantity')}</span>
+                                                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-emerald-400' : 'opacity-40'}`}>{t('products.wholesale')}</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex flex-col items-end">
+                                                                    <div className="flex items-baseline gap-1">
+                                                                        <span className="text-2xl font-black">{tier.price_iqd.toLocaleString()}</span>
+                                                                        <span className="text-xs font-bold">IQD</span>
+                                                                    </div>
+                                                                    {isActive && (
+                                                                        <span className="text-[10px] font-bold uppercase animate-bounce mt-1">✓ {t('cart.wholesalePriceApplied')}</span>
+                                                                    )}
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         )}
