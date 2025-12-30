@@ -95,6 +95,9 @@ export const useCartStore = create<CartState>((set, get) => ({
             };
         }
 
+        // Ensure settings are fetched to correctly show discount modals/invites
+        get().fetchSettings();
+
         set((state) => {
             const existingItem = state.items.find(item => item.id === product.id);
             if (existingItem) {

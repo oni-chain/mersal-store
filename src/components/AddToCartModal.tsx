@@ -6,8 +6,14 @@ import { X, ShoppingCart, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 export default function AddToCartModal() {
-    const { showAddToCartModal, lastAddedProduct, closeModal, toggleCart, items } = useCartStore();
+    const { showAddToCartModal, lastAddedProduct, closeModal, toggleCart, items, globalTieredPricing, fetchSettings } = useCartStore();
     const { t } = useLanguage();
+
+    React.useEffect(() => {
+        if (showAddToCartModal) {
+            fetchSettings();
+        }
+    }, [showAddToCartModal, fetchSettings]);
 
     if (!showAddToCartModal || !lastAddedProduct) return null;
 
@@ -98,7 +104,7 @@ export default function AddToCartModal() {
                         </div>
 
                         {/* Basket Discount Logic Invite - Maximized Prominence */}
-                        {useCartStore.getState().globalTieredPricing && items.length > 0 && !activeTier && (
+                        {globalTieredPricing && items.length > 0 && !activeTier && (
                             <div className="bg-primary/10 border-2 border-primary/40 rounded-[2rem] p-6 mb-8 animate-in slide-in-from-bottom-4 duration-700 shadow-[0_0_40px_rgba(0,212,255,0.15)] relative overflow-hidden group">
                                 {/* Animated background glow */}
                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
