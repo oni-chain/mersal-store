@@ -41,7 +41,9 @@
         "whatsapp": "واتساب",
         "notEnoughStock": "الكمية المطلوبة غير متوفرة",
         "maxStockReached": "لقد وصلت للحد الأقصى المتوفر",
-        "clickToApply": "اضغط لتفعيل الخصم"
+        "clickToApply": "اضغط لتفعيل الخصم",
+        "technicalSpecs": "المواصفات الفنية",
+        "shippingPrice": "سعر الشحن 5000 دينار عراقي"
     },
     "cart": {
         "title": "سلتك",

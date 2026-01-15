@@ -145,7 +145,7 @@ export default function ProductPage() {
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
                                     <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
                                         <div className="w-2 h-8 bg-primary rounded-full" />
-                                        Technical Specifications
+                                        {t('products.technicalSpecs')}
                                     </h3>
                                     <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap relative z-10">
                                         {product?.description}
@@ -193,8 +193,11 @@ export default function ProductPage() {
                                             <div className={`p-4 rounded-2xl border flex items-center justify-between transition-all duration-300 ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30') : 'bg-red-500/10 border-red-500/30'}`}>
                                                 <div className="flex flex-col">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t('cart.shippingDetails')}</span>
-                                                    <span className={`text-sm font-bold ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
-                                                        {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} (${product.stock} ${t('products.unitsAvailable')})` : `${t('products.inStock')} (${product.stock} ${t('products.unitsAvailable')})`) : t('products.outOfStock')}
+                                                    <span className={`text-base font-black ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
+                                                        {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} ${product.stock} ${t('products.unitsAvailable')}` : `${t('products.inStock')} ${product.stock} ${t('products.unitsAvailable')}`) : t('products.outOfStock')}
+                                                    </span>
+                                                    <span className="text-xs font-bold text-gray-400 mt-1">
+                                                        {t('products.shippingPrice')}
                                                     </span>
                                                 </div>
                                                 <div className={`w-3 h-3 rounded-full ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500') : 'bg-red-500'}`} />
@@ -279,14 +282,14 @@ export default function ProductPage() {
 
                                 <div className="space-y-6 pt-6 border-t border-white/5">
                                     <div className="flex flex-col gap-4">
-                                        <div className="flex items-center justify-between text-gray-400 font-bold uppercase text-xs tracking-widest px-2">
-                                            <span>{t('products.selectQuantity')}</span>
+                                        <div className="flex items-center justify-between text-gray-300 font-black uppercase text-sm tracking-widest px-2 group">
+                                            <span className="group-hover:text-primary transition-colors">{t('products.selectQuantity')}</span>
                                             {nextTier ? (
-                                                <span className="text-primary italic">
-                                                    {t('products.buyMoreSaveMore')} ({nextTier.min_qty - quantity} more for {nextTier.price_iqd.toLocaleString()} IQD)
+                                                <span className="text-primary italic text-xs lg:text-sm animate-pulse">
+                                                    {t('products.buyMoreSaveMore')} ({nextTier.min_qty - quantity} {t('products.moreFor')} {nextTier.price_iqd.toLocaleString()} IQD)
                                                 </span>
                                             ) : (
-                                                <span>{t('products.moqBadge', { qty: product?.minOrderQty || 1 })}</span>
+                                                <span className="text-xs">{t('products.moqBadge', { qty: product?.minOrderQty || 1 })}</span>
                                             )}
                                         </div>
                                         <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4">
@@ -354,7 +357,7 @@ export default function ProductPage() {
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
                                         <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
                                             <div className="w-2 h-8 bg-primary rounded-full" />
-                                            Technical Specifications
+                                            {t('products.technicalSpecs')}
                                         </h3>
                                         <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap relative z-10">
                                             {product?.description}
@@ -399,7 +402,6 @@ export default function ProductPage() {
                     </div>
                 </div>
             )}
-
             <Footer />
         </div>
     );

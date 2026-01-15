@@ -41,7 +41,9 @@
         "whatsapp": "WhatsApp",
         "notEnoughStock": "Not enough stock available",
         "maxStockReached": "Maximum available stock reached",
-        "clickToApply": "Click to activate discount"
+        "clickToApply": "Click to activate discount",
+        "technicalSpecs": "Technical Specifications",
+        "shippingPrice": "Shipping Price 5,000 IQD"
     },
     "cart": {
         "title": "Your Loadout",
