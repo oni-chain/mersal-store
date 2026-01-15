@@ -328,11 +328,17 @@ export default function ProductPage() {
                                     </button>
                                 </div>
 
-                                <div className="space-y-4 pt-12 border-t border-white/5">
-                                    <h3 className="text-lg font-bold text-white uppercase tracking-widest border-b border-white/5 pb-2">Technical Specifications</h3>
-                                    <p className="text-gray-400 leading-relaxed text-lg whitespace-pre-wrap">
-                                        {product?.description}
-                                    </p>
+                                <div className="space-y-6 pt-12">
+                                    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
+                                        <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
+                                            <div className="w-2 h-8 bg-primary rounded-full" />
+                                            Technical Specifications
+                                        </h3>
+                                        <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap relative z-10">
+                                            {product?.description}
+                                        </p>
+                                    </div>
                                 </div>
                             </>
                         )}
@@ -342,7 +348,7 @@ export default function ProductPage() {
 
             {/* Sticky Mobile Add to Cart Bar */}
             {!isLoading && product && (
-                <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-black/80 backdrop-blur-xl border-t border-white/10 p-4 animate-slide-up shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
+                <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-black/80 backdrop-blur-xl border-t border-white/10 p-4 animate-slide-up shadow-[0_-20px_40px_rgba(0,0,0,0.5)] pb-safe">
                     <div className="flex items-center gap-4 max-w-7xl mx-auto">
                         <div className="flex-1 text-right">
                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">{t('products.totalAmount')}</p>
@@ -354,10 +360,14 @@ export default function ProductPage() {
                             onClick={() => {
                                 const element = document.getElementById('add-to-cart-section');
                                 if (element) {
-                                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    // Calculate offset for smooth scrolling to properly center it
+                                    const yOffset = -200;
+                                    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                    window.scrollTo({ top: y, behavior: 'smooth' });
+
                                     // Highlight effect
-                                    element.classList.add('ring-4', 'ring-primary/50');
-                                    setTimeout(() => element.classList.remove('ring-4', 'ring-primary/50'), 1500);
+                                    element.classList.add('ring-4', 'ring-primary/50', 'scale-[1.02]');
+                                    setTimeout(() => element.classList.remove('ring-4', 'ring-primary/50', 'scale-[1.02]'), 1500);
                                 }
                             }}
                             className={`flex-[2] font-black py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 uppercase tracking-tighter text-sm ${product.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-primary text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 shadow-none'}`}
