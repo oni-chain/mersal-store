@@ -104,6 +104,8 @@ export default function ProductPage() {
         </div>
     );
 
+    const addToCartRef = React.useRef<HTMLButtonElement>(null);
+
     return (
         <div className="min-h-screen bg-black text-white">
             <Navbar />
@@ -114,23 +116,41 @@ export default function ProductPage() {
                 </Link>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
-                        {isLoading ? (
-                            <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
-                                <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
-                            </div>
-                        ) : (
-                            <Image
-                                src={product?.image || '/hero_background.png'}
-                                alt={product?.name || 'Product'}
-                                fill
-                                priority
-                                className="object-cover"
-                            />
-                        )}
-                        {activeTier && (
-                            <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
-                                {t('products.bulkDiscount')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}% {t('products.savings')}
+                    <div className="space-y-8">
+                        <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+                            {isLoading ? (
+                                <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
+                                    <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
+                                </div>
+                            ) : (
+                                <Image
+                                    src={product?.image || '/hero_background.png'}
+                                    alt={product?.name || 'Product'}
+                                    fill
+                                    priority
+                                    className="object-cover"
+                                />
+                            )}
+                            {activeTier && (
+                                <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
+                                    {t('products.bulkDiscount')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}% {t('products.savings')}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Technical Specifications - Desktop Only (moved here) */}
+                        {!isLoading && product && (
+                            <div className="hidden md:block space-y-6">
+                                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
+                                    <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
+                                        <div className="w-2 h-8 bg-primary rounded-full" />
+                                        Technical Specifications
+                                    </h3>
+                                    <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap relative z-10">
+                                        {product?.description}
+                                    </p>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -304,7 +324,8 @@ export default function ProductPage() {
                                     </div>
 
                                     <button
-                                        id="add-to-cart-section"
+                                        ref={addToCartRef}
+                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all scroll-mt-32 transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${product?.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 border border-white/5 hover:bg-gray-700 shadow-none grayscale scale-100'}`}
                                         onClick={() => {
                                             if (product) {
                                                 if (product.stock !== undefined && product.stock <= 0) {
@@ -321,15 +342,15 @@ export default function ProductPage() {
                                                 }
                                             }
                                         }}
-                                        className={`w-full font-black py-6 px-8 rounded-2xl flex items-center justify-center gap-4 transition-all transform hover:scale-[1.02] shadow-2xl active:scale-95 uppercase tracking-widest ${product?.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20' : 'bg-primary hover:bg-cyan-400 text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 border border-white/5 hover:bg-gray-700 shadow-none grayscale scale-100'}`}
                                     >
                                         <ShoppingCart className="w-6 h-6" />
                                         {(product?.stock || 0) <= 0 ? t('products.outOfStock') : t('products.addToCart')}
                                     </button>
                                 </div>
 
-                                <div className="space-y-6 pt-12">
-                                    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm relative overflow-hidden group">
+                                {/* Technical Specifications - Mobile Only */}
+                                <div className="md:hidden space-y-6 pt-12">
+                                    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group">
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
                                         <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
                                             <div className="w-2 h-8 bg-primary rounded-full" />
@@ -358,16 +379,16 @@ export default function ProductPage() {
                         </div>
                         <button
                             onClick={() => {
-                                const element = document.getElementById('add-to-cart-section');
-                                if (element) {
-                                    // Calculate offset for smooth scrolling to properly center it
-                                    const yOffset = -200;
-                                    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                                    window.scrollTo({ top: y, behavior: 'smooth' });
+                                if (addToCartRef.current) {
+                                    addToCartRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                                     // Highlight effect
-                                    element.classList.add('ring-4', 'ring-primary/50', 'scale-[1.02]');
-                                    setTimeout(() => element.classList.remove('ring-4', 'ring-primary/50', 'scale-[1.02]'), 1500);
+                                    addToCartRef.current.classList.add('ring-4', 'ring-primary/50', 'scale-[1.02]');
+                                    setTimeout(() => {
+                                        if (addToCartRef.current) {
+                                            addToCartRef.current.classList.remove('ring-4', 'ring-primary/50', 'scale-[1.02]');
+                                        }
+                                    }, 1500);
                                 }
                             }}
                             className={`flex-[2] font-black py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 uppercase tracking-tighter text-sm ${product.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-primary text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 shadow-none'}`}
