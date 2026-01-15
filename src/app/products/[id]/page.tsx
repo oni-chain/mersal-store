@@ -216,7 +216,7 @@ export default function ProductPage() {
                                                                 key={idx}
                                                                 onClick={() => setQuantity(tier.min_qty)}
                                                                 className={`flex items-center justify-between px-6 py-5 rounded-2xl border-2 transition-all duration-500 relative group overflow-hidden ${isActive
-                                                                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.02] shadow-[0_0_30px_rgba(16,185,129,0.2)]'
+                                                                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.02] shadow-[0_0_30px_rgba(16,185,129,0.2)] host'
                                                                     : 'bg-white/2 border-white/5 text-gray-400 hover:border-primary/50 hover:bg-primary/5'
                                                                     }`}
                                                             >
@@ -255,13 +255,6 @@ export default function ProductPage() {
                                             </div>
                                         )}
                                     </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <h3 className="text-lg font-bold text-white uppercase tracking-widest border-b border-white/5 pb-2">Technical Specifications</h3>
-                                    <p className="text-gray-400 leading-relaxed text-lg whitespace-pre-wrap">
-                                        {product?.description}
-                                    </p>
                                 </div>
 
                                 <div className="space-y-6 pt-6 border-t border-white/5">
@@ -311,6 +304,7 @@ export default function ProductPage() {
                                     </div>
 
                                     <button
+                                        id="add-to-cart-section"
                                         onClick={() => {
                                             if (product) {
                                                 if (product.stock !== undefined && product.stock <= 0) {
@@ -333,11 +327,48 @@ export default function ProductPage() {
                                         {(product?.stock || 0) <= 0 ? t('products.outOfStock') : t('products.addToCart')}
                                     </button>
                                 </div>
+
+                                <div className="space-y-4 pt-12 border-t border-white/5">
+                                    <h3 className="text-lg font-bold text-white uppercase tracking-widest border-b border-white/5 pb-2">Technical Specifications</h3>
+                                    <p className="text-gray-400 leading-relaxed text-lg whitespace-pre-wrap">
+                                        {product?.description}
+                                    </p>
+                                </div>
                             </>
                         )}
                     </div>
                 </div>
             </div>
+
+            {/* Sticky Mobile Add to Cart Bar */}
+            {!isLoading && product && (
+                <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-black/80 backdrop-blur-xl border-t border-white/10 p-4 animate-slide-up shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
+                    <div className="flex items-center gap-4 max-w-7xl mx-auto">
+                        <div className="flex-1 text-right">
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">{t('products.totalAmount')}</p>
+                            <p className={`text-xl font-black ${activeTier ? 'text-emerald-500' : 'text-primary'} leading-none`}>
+                                {totalPriceIQD.toLocaleString()} <span className="text-[10px]">IQD</span>
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => {
+                                const element = document.getElementById('add-to-cart-section');
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    // Highlight effect
+                                    element.classList.add('ring-4', 'ring-primary/50');
+                                    setTimeout(() => element.classList.remove('ring-4', 'ring-primary/50'), 1500);
+                                }
+                            }}
+                            className={`flex-[2] font-black py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 uppercase tracking-tighter text-sm ${product.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-primary text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 shadow-none'}`}
+                        >
+                            <ShoppingCart className="w-4 h-4" />
+                            {product.stock && product.stock > 0 ? t('products.addToCart') : t('products.outOfStock')}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </div>
     );
