@@ -249,7 +249,7 @@ export default function ProductPage() {
                                                                     </div>
                                                                     <div className="flex flex-col text-right lg:text-left">
                                                                         <div className="flex items-center gap-2">
-                                                                            <span className="text-xl font-black">{tier.min_qty} {t('products.quantity')}</span>
+                                                                            <span className="text-xl font-black">{t('products.buyXFor').replace('{qty}', tier.min_qty.toString())}</span>
                                                                             {isHighestTier && (
                                                                                 <span className="bg-primary/20 text-primary text-[8px] font-black px-2 py-0.5 rounded-full border border-primary/30 uppercase tracking-tighter">
                                                                                     {t('products.bulkDiscount')}
