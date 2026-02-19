@@ -4,7 +4,10 @@
         "products": "Products",
         "about": "About",
         "cart": "Cart",
-        "contact": "Contact"
+        "contact": "Contact",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "tiktok": "TikTok"
     },
     "hero": {
         "title": "Mersal",

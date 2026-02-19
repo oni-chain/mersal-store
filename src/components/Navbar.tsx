@@ -1,9 +1,24 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { ShoppingCart, Menu, Globe } from 'lucide-react';
+import { ShoppingCart, Menu, Globe, Facebook, Instagram } from 'lucide-react';
 import { useCartStore } from '@/store/cart';
 import { useLanguage } from '@/context/LanguageContext';
 import Link from 'next/link';
+import { SOCIAL_LINKS } from '@/lib/constants';
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+    <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className={className}
+    >
+        <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+);
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -33,18 +48,35 @@ export default function Navbar() {
                     </div>
 
                     <div className="flex items-center gap-3 md:gap-6">
-                        <a
-                            href="https://wa.me/9647708511364"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hidden md:flex bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-4 py-1.5 rounded-full text-xs font-black items-center gap-2 hover:bg-emerald-500 hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                        >
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </span>
-                            {t('nav.contact')}
-                        </a>
+                        <div className="hidden md:flex items-center gap-4">
+                            <a 
+                                href={SOCIAL_LINKS.facebook} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-[#1877F2] transition-all duration-300 hover:scale-110"
+                                title={t('nav.facebook')}
+                            >
+                                <Facebook className="w-5 h-5" />
+                            </a>
+                            <a 
+                                href={SOCIAL_LINKS.instagram} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-[#E4405F] transition-all duration-300 hover:scale-110"
+                                title={t('nav.instagram')}
+                            >
+                                <Instagram className="w-5 h-5" />
+                            </a>
+                            <a 
+                                href={SOCIAL_LINKS.tiktok} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-white transition-all duration-300 hover:scale-110"
+                                title={t('nav.tiktok')}
+                            >
+                                <TikTokIcon className="w-5 h-5" />
+                            </a>
+                        </div>
 
                         <button
                             onClick={toggleLanguage}
@@ -77,15 +109,35 @@ export default function Navbar() {
             <div id="mobile-menu" className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 right-0 p-4 shadow-xl`}>
                 <div className="flex flex-col space-y-4 font-bold text-center">
                     {/* Links removed as requested */}
-                    <a
-                        href="https://wa.me/9647708511364"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="py-3 text-emerald-500 uppercase tracking-widest text-sm border border-emerald-900/30 rounded-lg bg-emerald-500/5 flex items-center justify-center gap-2"
-                    >
-                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                        {t('nav.contact')}
-                    </a>
+                    <div className="grid grid-cols-3 gap-2">
+                        <a 
+                            href={SOCIAL_LINKS.facebook} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-[#1877F2]/10 active:text-[#1877F2] transition-colors"
+                        >
+                            <Facebook className="w-6 h-6" />
+                            <span className="text-[10px] font-bold">{t('nav.facebook')}</span>
+                        </a>
+                        <a 
+                            href={SOCIAL_LINKS.instagram} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-[#E4405F]/10 active:text-[#E4405F] transition-colors"
+                        >
+                            <Instagram className="w-6 h-6" />
+                            <span className="text-[10px] font-bold">{t('nav.instagram')}</span>
+                        </a>
+                        <a 
+                            href={SOCIAL_LINKS.tiktok} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-white/10 active:text-white transition-colors"
+                        >
+                            <TikTokIcon className="w-6 h-6" />
+                            <span className="text-[10px] font-bold">{t('nav.tiktok')}</span>
+                        </a>
+                    </div>
                     <button onClick={toggleCart} className="py-2 text-red-600 uppercase tracking-widest text-sm border border-red-900 rounded-lg bg-red-900/10">
                         {t('nav.cart')} ({itemCount})
                     </button>

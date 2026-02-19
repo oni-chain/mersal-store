@@ -4,7 +4,10 @@
         "products": "المنتجات",
         "about": "من نحن",
         "cart": "السلة",
-        "contact": "تواصل معنا"
+        "contact": "تواصل معنا",
+        "facebook": "فيسبوك",
+        "instagram": "إنستغرام",
+        "tiktok": "تيك توك"
     },
     "hero": {
         "title": "مرسال",
