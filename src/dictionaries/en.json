@@ -17,6 +17,7 @@
     "products": {
         "title": "SPECIAL COLLECTION",
         "addToCart": "Add to Cart",
+        "goToAddToCart": "Go to Add to Cart",
         "buyNow": "Buy",
         "outOfStock": "Out of Stock",
         "outOfStockMsg": "Sorry, this product is currently out of stock and will be available soon. For details, please contact: 07708511364",

@@ -398,7 +398,7 @@ export default function ProductPage() {
                             className={`flex-[2] font-black py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 uppercase tracking-tighter text-sm ${product.stock && product.stock > 0 ? (activeTier ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-primary text-black shadow-primary/20') : 'bg-gray-800 text-gray-400 shadow-none'}`}
                         >
                             <ShoppingCart className="w-4 h-4" />
-                            {product.stock && product.stock > 0 ? t('products.addToCart') : t('products.outOfStock')}
+                            {product.stock && product.stock > 0 ? t('products.goToAddToCart') : t('products.outOfStock')}
                         </button>
                     </div>
                 </div>
