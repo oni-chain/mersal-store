@@ -25,9 +25,12 @@ export default function Hero() {
                         onClick={() => {
                             const productsSection = document.getElementById('products');
                             if (productsSection) {
-                                productsSection.scrollIntoView({ behavior: 'smooth' });
+                                productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             } else {
-                                window.scrollTo({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+                                window.scrollTo({ 
+                                    top: window.innerHeight * 0.8, 
+                                    behavior: 'smooth' 
+                                });
                             }
                         }}
                         className="bg-primary text-white font-bold py-4 px-12 rounded-full hover:bg-blue-600 hover:scale-105 transition-all shadow-lg hover:shadow-primary/25 active:scale-95"

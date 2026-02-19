@@ -384,7 +384,7 @@ export default function ProductPage() {
                         <button
                             onClick={() => {
                                 if (addToCartRef.current) {
-                                    addToCartRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    addToCartRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
                                     // Highlight effect
                                     addToCartRef.current.classList.add('ring-4', 'ring-primary/50', 'scale-[1.02]');
