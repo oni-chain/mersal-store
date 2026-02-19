@@ -133,7 +133,7 @@ export default function ProductPage() {
                             )}
                             {activeTier && (
                                 <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
-                                    {t('products.bulkDiscount')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}% {t('products.savings')}
+                                    {t('products.offerActivated')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}%
                                 </div>
                             )}
                         </div>
@@ -267,6 +267,7 @@ export default function ProductPage() {
                                                                         <span className="text-2xl font-black">{tier.price_iqd.toLocaleString()}</span>
                                                                         <span className="text-xs font-bold">IQD</span>
                                                                     </div>
+                                                                    <span className="text-[10px] font-black text-gray-500 uppercase">{t('products.perUnit')}</span>
                                                                     {isActive && (
                                                                         <span className="text-[10px] font-bold uppercase animate-bounce mt-1 text-emerald-500">✓ {t('cart.wholesalePriceApplied')}</span>
                                                                     )}
