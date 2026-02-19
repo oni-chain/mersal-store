@@ -98,8 +98,12 @@ export default function Navbar() {
                             )}
                         </button>
 
-                        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-white hover:text-secondary transition-colors p-1">
-                            <Menu className="w-6 h-6" />
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                            className="md:hidden flex items-center gap-1.5 text-white hover:text-secondary transition-all bg-white/5 border border-white/10 px-3 py-1.5 rounded-full active:scale-95 active:bg-white/10"
+                        >
+                            <Menu className="w-5 h-5" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">{t('nav.socialLinks')}</span>
                         </button>
                     </div>
                 </div>
