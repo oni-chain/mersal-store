@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${cairo.variable}`}>
+    <html lang="ar" dir="rtl" className={`${inter.variable} ${cairo.variable}`}>
       <body className={`${inter.className} antialiased`}>
         <LanguageProvider>
           {children}
