@@ -100,10 +100,10 @@ export default function Navbar() {
 
                         <button 
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-                            className="md:hidden flex items-center gap-1.5 text-white hover:text-secondary transition-all bg-white/5 border border-white/10 px-3 py-1.5 rounded-full active:scale-95 active:bg-white/10"
+                            className="md:hidden flex items-center gap-2 text-white hover:text-secondary transition-all bg-white/10 border-2 border-white/20 px-5 py-2.5 rounded-full active:scale-95 active:bg-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                         >
-                            <Menu className="w-5 h-5" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">{t('nav.socialLinks')}</span>
+                            <Menu className="w-6 h-6 text-primary" />
+                            <span className="text-xs font-black uppercase tracking-widest leading-none">{t('nav.socialLinks')}</span>
                         </button>
                     </div>
                 </div>
