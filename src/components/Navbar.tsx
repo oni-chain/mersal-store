@@ -56,7 +56,7 @@ export default function Navbar() {
                                 className="text-gray-400 hover:text-[#1877F2] transition-all duration-300 hover:scale-110"
                                 title={t('nav.facebook')}
                             >
-                                <Facebook className="w-5 h-5" />
+                                <Facebook className="w-6 h-6" />
                             </a>
                             <a 
                                 href={SOCIAL_LINKS.instagram} 
@@ -65,7 +65,7 @@ export default function Navbar() {
                                 className="text-gray-400 hover:text-[#E4405F] transition-all duration-300 hover:scale-110"
                                 title={t('nav.instagram')}
                             >
-                                <Instagram className="w-5 h-5" />
+                                <Instagram className="w-6 h-6" />
                             </a>
                             <a 
                                 href={SOCIAL_LINKS.tiktok} 
@@ -74,7 +74,7 @@ export default function Navbar() {
                                 className="text-gray-400 hover:text-white transition-all duration-300 hover:scale-110"
                                 title={t('nav.tiktok')}
                             >
-                                <TikTokIcon className="w-5 h-5" />
+                                <TikTokIcon className="w-6 h-6" />
                             </a>
                         </div>
 
@@ -116,7 +116,7 @@ export default function Navbar() {
                             rel="noopener noreferrer"
                             className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-[#1877F2]/10 active:text-[#1877F2] transition-colors"
                         >
-                            <Facebook className="w-6 h-6" />
+                            <Facebook className="w-7 h-7" />
                             <span className="text-[10px] font-bold">{t('nav.facebook')}</span>
                         </a>
                         <a 
@@ -125,7 +125,7 @@ export default function Navbar() {
                             rel="noopener noreferrer"
                             className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-[#E4405F]/10 active:text-[#E4405F] transition-colors"
                         >
-                            <Instagram className="w-6 h-6" />
+                            <Instagram className="w-7 h-7" />
                             <span className="text-[10px] font-bold">{t('nav.instagram')}</span>
                         </a>
                         <a 
@@ -134,7 +134,7 @@ export default function Navbar() {
                             rel="noopener noreferrer"
                             className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-white/10 active:text-white transition-colors"
                         >
-                            <TikTokIcon className="w-6 h-6" />
+                            <TikTokIcon className="w-7 h-7" />
                             <span className="text-[10px] font-bold">{t('nav.tiktok')}</span>
                         </a>
                     </div>
