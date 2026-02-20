@@ -109,13 +109,13 @@ export default function ProductPage() {
     return (
         <div className="min-h-screen bg-black text-white">
             <Navbar />
-            <div className="max-w-7xl mx-auto px-4 py-32">
+            <div className="max-w-7xl mx-auto px-4 py-20 lg:py-24">
                 <Link href="/" className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors">
                     <ArrowLeft className={`w-4 h-4 ${language === 'ar' ? 'rotate-180 ml-2' : 'mr-2'}`} />
                     {t('cart.continue')}
                 </Link>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <div className="space-y-8">
                         <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
                             {isLoading ? (
@@ -141,7 +141,7 @@ export default function ProductPage() {
                         {/* Technical Specifications - Desktop Only (moved here) */}
                         {!isLoading && product && (
                             <div className="hidden md:block space-y-6">
-                                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 lg:p-8 backdrop-blur-sm relative overflow-hidden group">
+                                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
                                     <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
                                         <div className="w-2 h-8 bg-primary rounded-full" />
@@ -155,7 +155,7 @@ export default function ProductPage() {
                         )}
                     </div>
 
-                    <div className="flex flex-col justify-center space-y-8">
+                    <div className="flex flex-col justify-start space-y-6 lg:space-y-5">
                         {isLoading ? (
                             <div className="space-y-4 animate-pulse">
                                 <div className="h-10 bg-white/5 rounded w-3/4" />
@@ -173,46 +173,39 @@ export default function ProductPage() {
                                     <h1 className="text-4xl md:text-5xl font-black font-cairo tracking-tight text-white">{product?.name}</h1>
 
                                     <div className="flex flex-col gap-4">
-                                        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4">
-                                            <div className={`px-5 py-5 lg:px-8 lg:py-6 rounded-2xl border transition-all duration-300 flex-1 ${activeTier ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
-                                                <p className={`text-[10px] lg:text-xs font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>
+                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4 items-stretch">
+                                            <div className={`px-5 py-4 lg:px-6 lg:py-5 rounded-2xl border transition-all duration-300 flex flex-col justify-center ${activeTier ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]' : 'bg-primary/10 border-primary/30 shadow-[0_0_20px_rgba(0,212,255,0.1)]'}`}>
+                                                <p className={`text-[10px] font-black uppercase mb-1 tracking-widest ${activeTier ? 'text-emerald-500' : 'text-primary'}`}>
                                                     {activeTier ? t('products.wholesale') : t('products.priceIQD')}
                                                 </p>
-                                                <p className={`text-3xl sm:text-4xl lg:text-5xl font-black transition-all duration-300 ${isPulsing ? 'scale-105' : 'scale-100'} ${activeTier ? 'text-emerald-500' : 'text-white'} leading-none`}>
-                                                    {unitPriceIQD.toLocaleString()} <span className="text-xs sm:text-sm font-bold opacity-70">IQD</span>
+                                                <p className={`text-2xl sm:text-3xl lg:text-4xl font-black transition-all duration-300 ${isPulsing ? 'scale-105' : 'scale-100'} ${activeTier ? 'text-emerald-500' : 'text-white'} leading-none`}>
+                                                    {unitPriceIQD.toLocaleString()} <span className="text-[10px] sm:text-xs font-bold opacity-70">IQD</span>
                                                 </p>
                                             </div>
-                                            <div className="px-5 py-4 bg-white/5 rounded-2xl border border-white/10 lg:w-auto">
-                                                <p className="text-[10px] font-bold text-gray-500 uppercase mb-1 leading-none">{t('products.priceUSD')}</p>
-                                                <p className="text-lg lg:text-2xl font-black text-gray-400 leading-none">${unitPriceUSD.toFixed(2)}</p>
-                                            </div>
-                                        </div>
-
-                                        {/* Stock & Sales Status */}
-                                        <div className="flex flex-col gap-3">
-                                            <div className={`p-4 rounded-2xl border flex items-center justify-between transition-all duration-300 ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30') : 'bg-red-500/10 border-red-500/30'}`}>
+                                            
+                                            <div className={`p-4 lg:p-5 rounded-2xl border flex items-center justify-between transition-all duration-300 ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30') : 'bg-red-500/10 border-red-500/30'}`}>
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t('cart.shippingDetails')}</span>
-                                                    <span className={`text-base font-black ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
-                                                        {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} ${product.stock} ${t('products.unitsAvailable')}` : `${t('products.inStock')} ${product.stock} ${t('products.unitsAvailable')}`) : t('products.outOfStock')}
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-none mb-1">{t('cart.shippingDetails')}</span>
+                                                    <span className={`text-sm lg:text-base font-black leading-tight ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'text-amber-500' : 'text-emerald-500') : 'text-red-500'}`}>
+                                                        {product?.stock && product.stock > 0 ? (product.stock <= 5 ? `${t('products.limitedStock')} ${product.stock}` : `${t('products.inStock')} ${product.stock}`) : t('products.outOfStock')}
                                                     </span>
-                                                    <span className="text-xs font-bold text-gray-400 mt-1">
+                                                    <span className="text-[10px] font-bold text-gray-500 mt-0.5 whitespace-nowrap">
                                                         {t('products.shippingPrice')}
                                                     </span>
                                                 </div>
-                                                <div className={`w-3 h-3 rounded-full ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500') : 'bg-red-500'}`} />
+                                                <div className={`w-2.5 h-2.5 rounded-full ${product?.stock && product.stock > 0 ? (product.stock <= 5 ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500') : 'bg-red-500'}`} />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 flex items-center gap-2">
+                                                <span className="text-[10px] font-bold text-gray-500 uppercase leading-none">{t('products.priceUSD')}:</span>
+                                                <span className="text-sm font-black text-gray-400">${unitPriceUSD.toFixed(2)}</span>
                                             </div>
 
                                             {product?.soldCount && product.soldCount > 0 ? (
-                                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
-                                                    <div className="flex -space-x-2">
-                                                        {[...Array(3)].map((_, i) => (
-                                                            <div key={i} className="w-6 h-6 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center overflow-hidden">
-                                                                <div className="w-full h-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary italic">M</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                    <span className="text-sm font-black text-white italic">
+                                                <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl flex items-center gap-2">
+                                                    <span className="text-[10px] font-black text-white italic">
                                                         {t('products.unitsSold').replace('{qty}', product.soldCount.toString())}
                                                     </span>
                                                 </div>
@@ -238,13 +231,13 @@ export default function ProductPage() {
                                                                 type="button"
                                                                 key={idx}
                                                                 onClick={() => setQuantity(tier.min_qty)}
-                                                                className={`flex items-center justify-between px-6 py-5 rounded-2xl border-2 transition-all duration-500 relative group overflow-hidden ${isActive
-                                                                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.02] shadow-[0_0_30px_rgba(16,185,129,0.2)] host'
+                                                                className={`flex items-center justify-between px-5 py-4 lg:px-6 lg:py-4 rounded-2xl border-2 transition-all duration-500 relative group overflow-hidden ${isActive
+                                                                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.01] shadow-[0_0_20px_rgba(16,185,129,0.15)] host'
                                                                     : 'bg-white/2 border-white/5 text-gray-400 hover:border-primary/50 hover:bg-primary/5'
                                                                     }`}
                                                             >
                                                                 <div className="flex items-center gap-4">
-                                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-300 ${isActive ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-500 group-hover:bg-primary group-hover:text-black group-hover:scale-110'}`}>
+                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black transition-all duration-300 ${isActive ? 'bg-emerald-500 text-black' : 'bg-white/5 text-gray-500 group-hover:bg-primary group-hover:text-black group-hover:scale-110'}`}>
                                                                         {tier.min_qty}+
                                                                     </div>
                                                                     <div className="flex flex-col text-right lg:text-left">
@@ -281,7 +274,7 @@ export default function ProductPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-6 pt-6 border-t border-white/5">
+                                <div className="space-y-4 pt-4 border-t border-white/5">
                                     <div className="flex flex-col gap-4">
                                         <div className="flex items-center justify-between text-gray-300 font-black uppercase text-sm tracking-widest px-2 group">
                                             <span className="group-hover:text-primary transition-colors">{t('products.selectQuantity')}</span>
