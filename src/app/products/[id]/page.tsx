@@ -230,7 +230,13 @@ export default function ProductPage() {
                                                             <button
                                                                 type="button"
                                                                 key={idx}
-                                                                onClick={() => setQuantity(tier.min_qty)}
+                                                                 onClick={() => {
+                                                                    if (quantity === tier.min_qty) {
+                                                                        setQuantity(product?.minOrderQty || 1);
+                                                                    } else {
+                                                                        setQuantity(tier.min_qty);
+                                                                    }
+                                                                }}
                                                                 className={`flex items-center justify-between px-5 py-4 lg:px-6 lg:py-4 rounded-2xl border-2 transition-all duration-500 relative group overflow-hidden ${isActive
                                                                     ? 'bg-emerald-500/20 border-emerald-500 text-emerald-500 scale-[1.01] shadow-[0_0_20px_rgba(16,185,129,0.15)] host'
                                                                     : 'bg-white/2 border-white/5 text-gray-400 hover:border-primary/50 hover:bg-primary/5'
