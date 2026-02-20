@@ -109,48 +109,56 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Social Links Menu (Dropdown on Desktop, Full-width on Mobile) */}
+            {/* Background Overlay for Desktop */}
+            {isMobileMenuOpen && (
+                <div 
+                    className="hidden md:block fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] transition-all duration-300"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
+            {/* Social Links Menu (Centered on Desktop, Full-width on Mobile) */}
             <div 
                 id="social-menu" 
-                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:left-4 md:right-auto md:w-64 md:rounded-2xl md:top-24 transition-all duration-300 z-[60]`}
+                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[450px] md:max-w-[90vw] md:rounded-3xl md:p-8 transition-all duration-300 z-[60]`}
             >
                 <div className="flex flex-col space-y-4 font-bold text-center">
-                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">{t('nav.socialLinks')}</p>
+                    <div className="flex items-center justify-between pb-4 border-b border-white/5">
+                        <p className="text-xs text-gray-400 uppercase tracking-[0.3em] font-black">{t('nav.socialLinks')}</p>
                         <button 
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="hidden md:flex p-1 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                            className="hidden md:flex p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
                         >
-                            <X className="w-4 h-4" />
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
-                    <div className="grid grid-cols-3 md:grid-cols-1 gap-2">
+                    <div className="grid grid-cols-3 md:grid-cols-1 gap-3 md:gap-4 mt-2">
                         <a 
                             href={SOCIAL_LINKS.facebook} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex flex-col md:flex-row items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-[#1877F2]/10 hover:text-[#1877F2] transition-colors group"
+                            className="flex flex-col md:flex-row items-center gap-3 md:gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:bg-[#1877F2]/10 hover:text-[#1877F2] transition-all group"
                         >
-                            <Facebook className="w-7 h-7 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] md:text-sm font-bold">{t('nav.facebook')}</span>
+                            <Facebook className="w-7 h-7 md:w-6 md:h-6 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] md:text-base font-black uppercase tracking-widest">{t('nav.facebook')}</span>
                         </a>
                         <a 
                             href={SOCIAL_LINKS.instagram} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex flex-col md:flex-row items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-[#E4405F]/10 hover:text-[#E4405F] transition-colors group"
+                            className="flex flex-col md:flex-row items-center gap-3 md:gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:bg-[#E4405F]/10 hover:text-[#E4405F] transition-all group"
                         >
-                            <Instagram className="w-7 h-7 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] md:text-sm font-bold">{t('nav.instagram')}</span>
+                            <Instagram className="w-7 h-7 md:w-6 md:h-6 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] md:text-base font-black uppercase tracking-widest">{t('nav.instagram')}</span>
                         </a>
                         <a 
                             href={SOCIAL_LINKS.tiktok} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex flex-col md:flex-row items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-colors group"
+                            className="flex flex-col md:flex-row items-center gap-3 md:gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-all group"
                         >
-                            <TikTokIcon className="w-7 h-7 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
-                            <span className="text-[10px] md:text-sm font-bold">{t('nav.tiktok')}</span>
+                            <TikTokIcon className="w-7 h-7 md:w-6 md:h-6 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] md:text-base font-black uppercase tracking-widest">{t('nav.tiktok')}</span>
                         </a>
                     </div>
                     <button onClick={toggleCart} className="py-2 text-red-600 uppercase tracking-widest text-sm border border-red-900 rounded-lg bg-red-900/10">
