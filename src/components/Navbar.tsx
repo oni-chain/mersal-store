@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { ShoppingCart, Users, Globe, Facebook, Instagram } from 'lucide-react';
+import { ShoppingCart, Users, Globe, Facebook, Instagram, X } from 'lucide-react';
 import { useCartStore } from '@/store/cart';
 import { useLanguage } from '@/context/LanguageContext';
 import Link from 'next/link';
@@ -112,10 +112,18 @@ export default function Navbar() {
             {/* Social Links Menu (Dropdown on Desktop, Full-width on Mobile) */}
             <div 
                 id="social-menu" 
-                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:left-auto md:right-4 md:w-72 md:rounded-2xl md:top-24 transition-all duration-300 z-[60]`}
+                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:left-4 md:right-auto md:w-64 md:rounded-2xl md:top-24 transition-all duration-300 z-[60]`}
             >
                 <div className="flex flex-col space-y-4 font-bold text-center">
-                    <p className="hidden md:block text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black pb-2 border-b border-white/5">{t('nav.socialLinks')}</p>
+                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black">{t('nav.socialLinks')}</p>
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="hidden md:flex p-1 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
                     <div className="grid grid-cols-3 md:grid-cols-1 gap-2">
                         <a 
                             href={SOCIAL_LINKS.facebook} 
