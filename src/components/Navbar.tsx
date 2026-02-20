@@ -120,7 +120,7 @@ export default function Navbar() {
             {/* Social Links Menu (Centered on Desktop, Full-width on Mobile) */}
             <div 
                 id="social-menu" 
-                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:fixed md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[450px] md:max-w-[90vw] md:rounded-3xl md:p-8 transition-all duration-300 z-[60]`}
+                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:fixed md:inset-0 md:m-auto md:h-fit md:w-[480px] md:max-w-[95vw] md:rounded-[2.5rem] md:p-10 transition-all duration-300 z-[60]`}
             >
                 <div className="flex flex-col space-y-4 font-bold text-center">
                     <div className="flex items-center justify-between pb-4 border-b border-white/5">
