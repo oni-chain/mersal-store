@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Cart from "@/components/Cart";
 import AddToCartModal from "@/components/AddToCartModal";
 import OutOfStockModal from "@/components/OutOfStockModal";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const cairo = Cairo({
@@ -40,6 +41,7 @@ export default function RootLayout({
           <Cart />
           <AddToCartModal />
           <OutOfStockModal />
+          <Analytics />
         </LanguageProvider>
       </body>
     </html>
