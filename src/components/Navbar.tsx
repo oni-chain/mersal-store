@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { ShoppingCart, Menu, Globe, Facebook, Instagram } from 'lucide-react';
+import { ShoppingCart, Users, Globe, Facebook, Instagram } from 'lucide-react';
 import { useCartStore } from '@/store/cart';
 import { useLanguage } from '@/context/LanguageContext';
 import Link from 'next/link';
@@ -102,44 +102,47 @@ export default function Navbar() {
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                             className="flex items-center gap-2 text-white hover:text-secondary transition-all bg-white/10 border-2 border-white/20 px-4 py-2 rounded-full active:scale-95 active:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                         >
-                            <Menu className="w-5 h-5 text-primary" />
+                            <Users className="w-5 h-5 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-widest leading-none">{t('nav.socialLinks')}</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile Menu */}
-            <div id="mobile-menu" className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 right-0 p-4 shadow-xl`}>
+            {/* Social Links Menu (Dropdown on Desktop, Full-width on Mobile) */}
+            <div 
+                id="social-menu" 
+                className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border border-white/10 absolute top-20 left-0 right-0 p-4 shadow-2xl md:left-auto md:right-4 md:w-72 md:rounded-2xl md:top-24 transition-all duration-300 z-[60]`}
+            >
                 <div className="flex flex-col space-y-4 font-bold text-center">
-                    {/* Links removed as requested */}
-                    <div className="grid grid-cols-3 gap-2">
+                    <p className="hidden md:block text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black pb-2 border-b border-white/5">{t('nav.socialLinks')}</p>
+                    <div className="grid grid-cols-3 md:grid-cols-1 gap-2">
                         <a 
                             href={SOCIAL_LINKS.facebook} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-[#1877F2]/10 active:text-[#1877F2] transition-colors"
+                            className="flex flex-col md:flex-row items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-[#1877F2]/10 hover:text-[#1877F2] transition-colors group"
                         >
-                            <Facebook className="w-7 h-7" />
-                            <span className="text-[10px] font-bold">{t('nav.facebook')}</span>
+                            <Facebook className="w-7 h-7 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] md:text-sm font-bold">{t('nav.facebook')}</span>
                         </a>
                         <a 
                             href={SOCIAL_LINKS.instagram} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-[#E4405F]/10 active:text-[#E4405F] transition-colors"
+                            className="flex flex-col md:flex-row items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-[#E4405F]/10 hover:text-[#E4405F] transition-colors group"
                         >
-                            <Instagram className="w-7 h-7" />
-                            <span className="text-[10px] font-bold">{t('nav.instagram')}</span>
+                            <Instagram className="w-7 h-7 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] md:text-sm font-bold">{t('nav.instagram')}</span>
                         </a>
                         <a 
                             href={SOCIAL_LINKS.tiktok} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 active:bg-white/10 active:text-white transition-colors"
+                            className="flex flex-col md:flex-row items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-colors group"
                         >
-                            <TikTokIcon className="w-7 h-7" />
-                            <span className="text-[10px] font-bold">{t('nav.tiktok')}</span>
+                            <TikTokIcon className="w-7 h-7 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] md:text-sm font-bold">{t('nav.tiktok')}</span>
                         </a>
                     </div>
                     <button onClick={toggleCart} className="py-2 text-red-600 uppercase tracking-widest text-sm border border-red-900 rounded-lg bg-red-900/10">
