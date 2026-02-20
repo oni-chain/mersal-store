@@ -48,7 +48,7 @@ export default function Navbar() {
                     </div>
 
                     <div className="flex items-center gap-3 md:gap-6">
-                        <div className="hidden md:flex items-center gap-4">
+                        <div className="hidden items-center gap-4">
                             <a 
                                 href={SOCIAL_LINKS.facebook} 
                                 target="_blank" 
@@ -100,7 +100,7 @@ export default function Navbar() {
 
                         <button 
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-                            className="md:hidden flex items-center gap-2 text-white hover:text-secondary transition-all bg-white/10 border-2 border-white/20 px-4 py-2 rounded-full active:scale-95 active:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                            className="flex items-center gap-2 text-white hover:text-secondary transition-all bg-white/10 border-2 border-white/20 px-4 py-2 rounded-full active:scale-95 active:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                         >
                             <Menu className="w-5 h-5 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-widest leading-none">{t('nav.socialLinks')}</span>
@@ -110,7 +110,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Menu */}
-            <div id="mobile-menu" className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 right-0 p-4 shadow-xl`}>
+            <div id="mobile-menu" className={`${isMobileMenuOpen ? 'block' : 'hidden'} bg-black/95 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 right-0 p-4 shadow-xl`}>
                 <div className="flex flex-col space-y-4 font-bold text-center">
                     {/* Links removed as requested */}
                     <div className="grid grid-cols-3 gap-2">
