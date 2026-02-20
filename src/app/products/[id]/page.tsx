@@ -284,13 +284,6 @@ export default function ProductPage() {
                                     <div className="flex flex-col gap-4">
                                         <div className="flex items-center justify-between text-gray-200 font-black uppercase text-base lg:text-lg tracking-tight px-2 group">
                                             <span className="group-hover:text-primary transition-colors leading-tight">{t('products.selectQuantity')}</span>
-                                            {nextTier ? (
-                                                <span className="text-primary italic text-xs lg:text-sm animate-pulse">
-                                                    {t('products.buyMoreSaveMore')} ({nextTier.min_qty - quantity} {t('products.moreFor')} {nextTier.price_iqd.toLocaleString()} IQD)
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs">{t('products.moqBadge', { qty: product?.minOrderQty || 1 })}</span>
-                                            )}
                                         </div>
                                         <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4">
                                             <div className="flex items-center bg-white/5 border border-white/10 rounded-2xl p-2 gap-3 lg:gap-4 justify-between lg:justify-start">
