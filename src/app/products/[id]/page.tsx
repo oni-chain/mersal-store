@@ -138,21 +138,6 @@ export default function ProductPage() {
                             )}
                         </div>
 
-                        {/* Technical Specifications - Desktop Only (moved here) */}
-                        {!isLoading && product && (
-                            <div className="hidden md:block space-y-6">
-                                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
-                                    <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
-                                        <div className="w-2 h-8 bg-primary rounded-full" />
-                                        {t('products.technicalSpecs')}
-                                    </h3>
-                                    <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap relative z-10">
-                                        {product?.description}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     <div className="flex flex-col justify-start space-y-6 lg:space-y-5">
@@ -211,6 +196,22 @@ export default function ProductPage() {
                                                 </div>
                                             ) : null}
                                         </div>
+
+                                        {/* Technical Specifications - Desktop Only (re-positioned here) */}
+                                        {!isLoading && product && (
+                                            <div className="hidden md:block">
+                                                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 lg:p-5 backdrop-blur-sm relative overflow-hidden group">
+                                                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl -mr-12 -mt-12" />
+                                                    <h3 className="text-xs lg:text-sm font-black text-white uppercase tracking-widest border-b border-white/10 pb-2 mb-3 flex items-center gap-2">
+                                                        <div className="w-1.5 h-5 bg-primary rounded-full" />
+                                                        {t('products.technicalSpecs')}
+                                                    </h3>
+                                                    <p className="text-gray-400 leading-relaxed text-xs lg:text-sm whitespace-pre-wrap relative z-10">
+                                                        {product?.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {/* Bulk Savings Section */}
                                         {product?.priceTiers && product.priceTiers.length > 0 && (
