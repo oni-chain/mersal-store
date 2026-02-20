@@ -198,9 +198,9 @@ export default function ProductPage() {
                                         </div>
 
                                         <div className="flex flex-wrap items-center gap-3">
-                                            <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 flex items-center gap-2">
-                                                <span className="text-[10px] font-bold text-gray-500 uppercase leading-none">{t('products.priceUSD')}:</span>
-                                                <span className="text-sm font-black text-gray-400">${unitPriceUSD.toFixed(2)}</span>
+                                            <div className="px-5 py-3 bg-white/5 rounded-xl border border-white/20 flex items-center gap-3 transition-all hover:bg-white/10">
+                                                <span className="text-xs font-black text-gray-400 uppercase leading-none tracking-widest">{t('products.priceUSD')}:</span>
+                                                <span className="text-xl font-black text-white">${unitPriceUSD.toFixed(2)}</span>
                                             </div>
 
                                             {product?.soldCount && product.soldCount > 0 ? (
@@ -276,8 +276,8 @@ export default function ProductPage() {
 
                                 <div className="space-y-4 pt-4 border-t border-white/5">
                                     <div className="flex flex-col gap-4">
-                                        <div className="flex items-center justify-between text-gray-300 font-black uppercase text-sm tracking-widest px-2 group">
-                                            <span className="group-hover:text-primary transition-colors">{t('products.selectQuantity')}</span>
+                                        <div className="flex items-center justify-between text-gray-200 font-black uppercase text-base lg:text-lg tracking-tight px-2 group">
+                                            <span className="group-hover:text-primary transition-colors leading-tight">{t('products.selectQuantity')}</span>
                                             {nextTier ? (
                                                 <span className="text-primary italic text-xs lg:text-sm animate-pulse">
                                                     {t('products.buyMoreSaveMore')} ({nextTier.min_qty - quantity} {t('products.moreFor')} {nextTier.price_iqd.toLocaleString()} IQD)

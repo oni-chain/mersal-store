@@ -29,7 +29,7 @@
         "priceIQD": "سعر الوحدة (د.ع)",
         "priceUSD": "السعر بالدولار",
         "totalAmount": "المجموع الكلي",
-        "selectQuantity": "اختر الكمية",
+        "selectQuantity": "اختر عدد القطع التي تود طلبها",
         "bulkDiscount": "خصم الكمية",
         "wholesale": "تم تفعيل العرض المميز",
         "offerActivated": "تم تفعيل العرض",
@@ -50,7 +50,7 @@
         "notEnoughStock": "عذراً، الكمية المطلوبة غير متوفرة حالياً.",
         "maxStockReached": "لقد وصلت للحد الأقصى المتوفر",
         "clickToApply": "اضغط للتفعيل",
-        "technicalSpecs": "المواصفات الفنية",
+        "technicalSpecs": "تفاصيل المنتج",
         "shippingPrice": "سعر الشحن 5000 دينار عراقي"
     },
     "cart": {

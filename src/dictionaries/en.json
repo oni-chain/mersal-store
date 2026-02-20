@@ -29,7 +29,7 @@
         "priceIQD": "Unit Price (IQD)",
         "priceUSD": "Price (USD)",
         "totalAmount": "Total Amount",
-        "selectQuantity": "Select Quantity",
+        "selectQuantity": "Select the number of pieces you wish to order",
         "bulkDiscount": "Bulk Discount",
         "wholesale": "Special Offer Activated",
         "offerActivated": "Offer Activated",
@@ -50,7 +50,7 @@
         "notEnoughStock": "Sorry, requested quantity is not available.",
         "maxStockReached": "Maximum available stock reached",
         "clickToApply": "Click to activate discount",
-        "technicalSpecs": "Technical Specifications",
+        "technicalSpecs": "Product Details",
         "shippingPrice": "Shipping price 5000 IQD"
     },
     "cart": {
