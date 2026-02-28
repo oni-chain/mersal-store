@@ -153,24 +153,30 @@ export default function ProductPage() {
                         </div>
 
                         {/* Image Gallery Thumbnails */}
-                        {!isLoading && product && (product.images?.length || 0) > 1 && (
-                            <div className="grid grid-cols-5 gap-3">
-                                {[product.image, ...(product.images || []).filter(img => img !== product.image)].map((img, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setActiveImage(img)}
-                                        className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-300 ${activeImage === img ? 'border-primary ring-2 ring-primary/20 scale-105' : 'border-white/5 hover:border-white/20 grayscale hover:grayscale-0'}`}
-                                    >
-                                        <Image
-                                            src={img}
-                                            alt={`${product.name} - image ${idx + 1}`}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                        {(() => {
+                            const allImages = Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[]));
+                            if (!isLoading && allImages.length > 1) {
+                                return (
+                                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3">
+                                        {allImages.map((img, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setActiveImage(img)}
+                                                className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-300 ${activeImage === img ? 'border-primary ring-2 ring-primary/20 scale-105' : 'border-white/5 hover:border-white/20 grayscale hover:grayscale-0'}`}
+                                            >
+                                                <Image
+                                                    src={img}
+                                                    alt={`${product?.name} - image ${idx + 1}`}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })()}
 
                         {/* Technical Specifications - Desktop Only */}
                         {!isLoading && product && (
