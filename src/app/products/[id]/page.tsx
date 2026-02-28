@@ -155,39 +155,33 @@ export default function ProductPage() {
                             </div>
 
                             {/* Thumbnails (Vertical on Desktop, Horizontal on Mobile) */}
-                            <div className="order-2 w-full md:w-36 lg:w-40">
-                                {(() => {
-                                    const allImages = Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[]));
-                                    if (!isLoading && allImages.length > 1) {
-                                        return (
-                                            <div className="flex md:flex-col gap-5 md:gap-8 overflow-x-auto md:overflow-visible no-scrollbar py-2 md:py-0">
-                                                {allImages.map((img, idx) => (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => setActiveImage(img)}
-                                                        className={`relative flex-shrink-0 w-32 h-32 md:w-full aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-500 group/thumb ${
-                                                            activeImage === img 
-                                                            ? 'border-primary ring-4 ring-primary/10 scale-105 z-10 shadow-2xl' 
-                                                            : 'border-white/5 hover:border-white/20 active:scale-95'
-                                                        }`}
-                                                    >
-                                                        <Image
-                                                            src={img}
-                                                            alt={`${product?.name} - image ${idx + 1}`}
-                                                            fill
-                                                            className={`object-cover transition-all duration-700 ${activeImage === img ? 'opacity-100 scale-110' : 'opacity-40 group-hover/thumb:opacity-100'}`}
-                                                        />
-                                                        {activeImage === img && (
-                                                            <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-                                                        )}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        );
-                                    }
-                                    return null;
-                                })()}
-                            </div>
+                            {!isLoading && (Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[]))).length > 1 && (
+                                <div className="order-2 w-full md:w-36 lg:w-40">
+                                    <div className="flex md:flex-col gap-5 md:gap-8 overflow-x-auto md:overflow-visible no-scrollbar py-2 md:py-0">
+                                        {Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[])).map((img, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setActiveImage(img)}
+                                                className={`relative flex-shrink-0 w-32 h-32 md:w-full aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-500 group/thumb ${
+                                                    activeImage === img 
+                                                    ? 'border-primary ring-4 ring-primary/10 scale-105 z-10 shadow-2xl' 
+                                                    : 'border-white/5 hover:border-white/20 active:scale-95'
+                                                }`}
+                                            >
+                                                <Image
+                                                    src={img}
+                                                    alt={`${product?.name} - image ${idx + 1}`}
+                                                    fill
+                                                    className={`object-cover transition-all duration-700 ${activeImage === img ? 'opacity-100 scale-110' : 'opacity-40 group-hover/thumb:opacity-100'}`}
+                                                />
+                                                {activeImage === img && (
+                                                    <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Technical Specifications (Now always under the image gallery) */}
