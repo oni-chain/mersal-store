@@ -27,6 +27,7 @@ const fetchProduct = async (id: string): Promise<Product> => {
         price: data.price,
         priceIQD: data.price_iqd,
         image: data.image_url,
+        images: data.images || [],
         description: data.description,
         minOrderQty: data.min_order_qty,
         stock: data.stock,
@@ -46,8 +47,18 @@ export default function ProductPage() {
     const { t, language } = useLanguage();
     const [quantity, setQuantity] = React.useState(1);
     const [isPulsing, setIsPulsing] = React.useState(false);
+    const [activeImage, setActiveImage] = React.useState<string | null>(null);
 
-    // Enable Real-time listener for this specific product
+    // Initial Active Image Load
+    React.useEffect(() => {
+        if (product && !activeImage) {
+            setActiveImage(product.image);
+        } else if (product && activeImage && !product.images?.includes(activeImage) && product.image !== activeImage) {
+            setActiveImage(product.image);
+        }
+    }, [product, activeImage]);
+
+    // Enable Real-time listener
     React.useEffect(() => {
         if (!id) return;
 
@@ -56,7 +67,7 @@ export default function ProductPage() {
             .on(
                 'postgres_changes',
                 {
-                    event: 'UPDATE', // We mostly care about stock/sold_count updates
+                    event: 'UPDATE',
                     schema: 'public',
                     table: 'products',
                     filter: `id=eq.${id}`
@@ -93,8 +104,7 @@ export default function ProductPage() {
     }, [unitPriceIQD]);
 
     const activeTier = product?.priceTiers?.find(tier => quantity >= tier.min_qty);
-    const nextTier = product?.priceTiers?.sort((a, b) => a.min_qty - b.min_qty).find(tier => tier.min_qty > quantity);
-
+    
     if (error) return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center font-cairo">
             <div className="text-center space-y-4">
@@ -116,20 +126,24 @@ export default function ProductPage() {
                 </Link>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    <div className="space-y-8">
-                        <div className="relative aspect-square bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+                    <div className="space-y-6">
+                        {/* Main Product Image */}
+                        <div className="relative aspect-square bg-[#0c0c0c] rounded-3xl overflow-hidden border border-white/5 shadow-2xl group">
                             {isLoading ? (
                                 <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
                                     <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
                                 </div>
                             ) : (
-                                <Image
-                                    src={product?.image || '/hero_background.png'}
-                                    alt={product?.name || 'Product'}
-                                    fill
-                                    priority
-                                    className="object-cover"
-                                />
+                                <>
+                                    <Image
+                                        src={activeImage || product?.image || '/hero_background.png'}
+                                        alt={product?.name || 'Product'}
+                                        fill
+                                        priority
+                                        className="object-cover transition-all duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                </>
                             )}
                             {activeTier && (
                                 <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
@@ -138,9 +152,29 @@ export default function ProductPage() {
                             )}
                         </div>
 
-                        {/* Technical Specifications - Desktop Only (moved here) */}
+                        {/* Image Gallery Thumbnails */}
+                        {!isLoading && product && (product.images?.length || 0) > 1 && (
+                            <div className="grid grid-cols-5 gap-3">
+                                {[product.image, ...(product.images || []).filter(img => img !== product.image)].map((img, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setActiveImage(img)}
+                                        className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-300 ${activeImage === img ? 'border-primary ring-2 ring-primary/20 scale-105' : 'border-white/5 hover:border-white/20 grayscale hover:grayscale-0'}`}
+                                    >
+                                        <Image
+                                            src={img}
+                                            alt={`${product.name} - image ${idx + 1}`}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Technical Specifications - Desktop Only */}
                         {!isLoading && product && (
-                            <div className="hidden md:block space-y-6">
+                            <div className="hidden md:block space-y-6 pt-4">
                                 <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
                                     <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">

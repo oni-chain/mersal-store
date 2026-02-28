@@ -271,13 +271,13 @@ export default function Cart() {
                                 )}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.secondaryPhone')}</label>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.secondaryPhone')} {t('cart.optionalPlaceholder')}</label>
                                 <input
                                     type="tel"
                                     value={formData.secondaryPhone}
                                     onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
                                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
-                                    placeholder={`${t('cart.phonePlaceholder')} ${t('cart.optionalPlaceholder')}`}
+                                    placeholder={`${t('cart.secondaryPhone')} ${t('cart.optionalPlaceholder')}`}
                                 />
                             </div>
                             <div>
@@ -305,7 +305,7 @@ export default function Cart() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.orderNotes')}</label>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.orderNotes')} {t('cart.optionalPlaceholder')}</label>
                                 <textarea
                                     value={formData.orderNotes}
                                     onChange={(e) => setFormData({ ...formData, orderNotes: e.target.value })}

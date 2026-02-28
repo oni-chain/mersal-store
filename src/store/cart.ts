@@ -7,6 +7,7 @@ export interface Product {
     price: number;
     priceIQD?: number;
     image: string;
+    images?: string[];
     description?: string;
     minOrderQty?: number;
     stock?: number;

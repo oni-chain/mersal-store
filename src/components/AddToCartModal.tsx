@@ -60,13 +60,21 @@ export default function AddToCartModal() {
 
                         {/* Top Icon & Status */}
                         <div className="flex flex-col items-center mb-8">
-                            <div className="relative mb-4">
-                                <div className={`absolute inset-0 ${activeTier ? 'bg-emerald-500/30' : 'bg-primary/30'} rounded-full blur-2xl animate-pulse scale-150`} />
-                                <div className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center bg-black border ${activeTier ? 'border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]' : 'border-primary/50 shadow-[0_0_20px_rgba(0,212,255,0.2)]'} rotate-[10deg]`}>
-                                    <ShoppingCart className={`w-10 h-10 ${activeTier ? 'text-emerald-400' : 'text-primary'}`} />
-                                    {/* Small success checkmark badge */}
-                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-2 border-black flex items-center justify-center">
-                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                            {/* Success Icon - Premium Redesign */}
+                            <div className="relative mb-6 group cursor-default">
+                                {/* Multi-layered glow */}
+                                <div className={`absolute -inset-4 ${activeTier ? 'bg-emerald-500/20' : 'bg-primary/20'} rounded-full blur-2xl animate-pulse opacity-40`} />
+                                <div className={`absolute -inset-1 bg-gradient-to-tr ${activeTier ? 'from-emerald-500/40 via-transparent to-emerald-400/40' : 'from-primary/40 via-transparent to-primary/40'} rounded-[2.2rem] blur-sm animate-[shimmer_3s_infinite]`} />
+                                
+                                <div className={`relative w-24 h-24 rounded-[2.2rem] flex items-center justify-center bg-[#0a0a0a] border-2 ${activeTier ? 'border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.25)]' : 'border-primary/40 shadow-[0_0_30px_rgba(0,212,255,0.25)]'} transition-transform duration-500 group-hover:rotate-[15deg] group-hover:scale-110`}>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-[2.2rem]" />
+                                    <ShoppingCart className={`w-12 h-12 ${activeTier ? 'text-emerald-400' : 'text-primary'}`} />
+                                    
+                                    {/* Elevated checkmark badge */}
+                                    <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-xl border-[3px] border-[#0a0a0a] flex items-center justify-center shadow-lg -rotate-[10deg] animate-in zoom-in-50 duration-500 delay-300">
+                                        <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
                                     </div>
                                 </div>
                             </div>

@@ -27,6 +27,7 @@ export default function AdminPage() {
         priceUSD: '',
         priceIQD: '',
         image_url: '',
+        images: [] as string[],
         minOrderQty: '1',
         stock: '0',
         priceTiers: [] as { min_qty: number; price_iqd: number }[]
@@ -164,9 +165,11 @@ export default function AdminPage() {
         setIsSubmitting(true);
         try {
             let imageUrl = formData.image_url;
+            let images = [...formData.images];
 
+            // If a single image file is selected (legacy behavior or main thumbnail)
             if (imageFile) {
-                const fileName = `${Date.now()}-${imageFile.name}`;
+                const fileName = `${Date.now()}-main-${imageFile.name}`;
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from('product-images')
                     .upload(`products/${fileName}`, imageFile);
@@ -178,6 +181,10 @@ export default function AdminPage() {
                     .getPublicUrl(`products/${fileName}`);
 
                 imageUrl = publicUrl;
+                // Add to images array if not already there
+                if (!images.includes(imageUrl)) {
+                    images = [imageUrl, ...images];
+                }
             }
 
             const productData = {
@@ -186,6 +193,7 @@ export default function AdminPage() {
                 price: parseFloat(formData.priceUSD),
                 price_iqd: parseFloat(formData.priceIQD),
                 image_url: imageUrl,
+                images: images,
                 min_order_qty: parseInt(formData.minOrderQty) || 1,
                 stock: parseInt(formData.stock) || 0,
                 price_tiers: formData.priceTiers,
@@ -206,7 +214,7 @@ export default function AdminPage() {
 
             setIsFormOpen(false);
             setEditingProduct(null);
-            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', stock: '0', priceTiers: [] });
+            setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', images: [], minOrderQty: '1', stock: '0', priceTiers: [] });
             setImageFile(null);
             fetchData();
             alert(`Product ${editingProduct ? 'updated' : 'added'} successfully!`);
@@ -228,7 +236,8 @@ export default function AdminPage() {
             image_url: product.image_url,
             minOrderQty: (product.min_order_qty || 1).toString(),
             stock: (product.stock || 0).toString(),
-            priceTiers: product.price_tiers || []
+            priceTiers: product.price_tiers || [],
+            images: product.images || []
         });
         setIsFormOpen(true);
     };
@@ -436,7 +445,7 @@ export default function AdminPage() {
                                 <button
                                     onClick={() => {
                                         setEditingProduct(null);
-                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', minOrderQty: '1', stock: '0', priceTiers: [] });
+                                        setFormData({ name: '', description: '', priceUSD: '', priceIQD: '', image_url: '', images: [], minOrderQty: '1', stock: '0', priceTiers: [] });
                                         setIsFormOpen(true);
                                     }}
                                     className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-gray-500 hover:text-primary hover:border-primary/50 transition-all flex items-center justify-center gap-2 group"
@@ -646,7 +655,70 @@ export default function AdminPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Visual Mapping</label>
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Product Gallery (Multiple Images)</label>
+                                        <div className="grid grid-cols-4 gap-2 mb-4">
+                                            {formData.images.map((img, idx) => (
+                                                <div key={idx} className="relative aspect-square bg-black rounded-lg overflow-hidden border border-white/10 group">
+                                                    <img src={img} className="w-full h-full object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newImages = formData.images.filter((_, i) => i !== idx);
+                                                            setFormData({ ...formData, images: newImages });
+                                                            if (formData.image_url === img) {
+                                                                setFormData(prev => ({ ...prev, image_url: newImages[0] || '', images: newImages }));
+                                                            }
+                                                        }}
+                                                        className="absolute top-1 right-1 p-1 bg-red-500/80 rounded-md text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                    {formData.image_url === img && (
+                                                        <div className="absolute bottom-0 inset-x-0 bg-primary/80 text-black text-[8px] font-black text-center py-0.5">MAIN</div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            <label className="aspect-square bg-black border-2 border-dashed border-white/10 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors group">
+                                                <Plus className="w-4 h-4 text-gray-500 group-hover:text-primary" />
+                                                <span className="text-[8px] text-gray-500 mt-1">Add</span>
+                                                <input
+                                                    type="file"
+                                                    multiple
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        if (!e.target.files) return;
+                                                        const files = Array.from(e.target.files);
+                                                        setIsSubmitting(true);
+                                                        try {
+                                                            const uploadedUrls: string[] = [];
+                                                            for (const file of files) {
+                                                                const fileName = `${Date.now()}-${file.name}`;
+                                                                const { data, error } = await supabase.storage
+                                                                    .from('product-images')
+                                                                    .upload(`products/${fileName}`, file);
+                                                                if (error) throw error;
+                                                                const { data: { publicUrl } } = supabase.storage
+                                                                    .from('product-images')
+                                                                    .getPublicUrl(`products/${fileName}`);
+                                                                uploadedUrls.push(publicUrl);
+                                                            }
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                images: [...prev.images, ...uploadedUrls],
+                                                                image_url: prev.image_url || uploadedUrls[0]
+                                                            }));
+                                                        } catch (err) {
+                                                            alert("Failed to upload some images");
+                                                        } finally {
+                                                            setIsSubmitting(false);
+                                                        }
+                                                    }}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                        </div>
+
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Main Artifact (Legacy/Quick Upload)</label>
                                         <div className="relative border-2 border-dashed border-white/10 rounded-2xl p-6 text-center hover:border-primary/50 transition-colors cursor-pointer group">
                                             <input
                                                 type="file"
@@ -662,12 +734,12 @@ export default function AdminPage() {
                                             ) : formData.image_url ? (
                                                 <div className="space-y-2">
                                                     <img src={formData.image_url} className="h-20 mx-auto object-cover rounded-lg" />
-                                                    <p className="text-xs text-gray-500">Click to replace image</p>
+                                                    <p className="text-xs text-gray-500">Click to replace main image</p>
                                                 </div>
                                             ) : (
                                                 <div className="space-y-2">
                                                     <Upload className="w-8 h-8 text-gray-600 mx-auto group-hover:text-primary transition-colors" />
-                                                    <p className="text-xs text-gray-500">Upload high-res artifact image</p>
+                                                    <p className="text-xs text-gray-500">Upload primary image</p>
                                                 </div>
                                             )}
                                         </div>
