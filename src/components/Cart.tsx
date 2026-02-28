@@ -8,7 +8,7 @@ export default function Cart() {
     const { items, isOpen, toggleCart, removeFromCart, updateQuantity, getCartTotal, getCartTotalIQD, clearCart } = useCartStore();
     const { t } = useLanguage();
     const [checkoutStep, setCheckoutStep] = useState<'cart' | 'details' | 'success'>('cart');
-    const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
+    const [formData, setFormData] = useState({ name: '', phone: '', secondaryPhone: '', province: '', address: '', orderNotes: '' });
     const [errors, setErrors] = useState<{ phone?: string; general?: string }>({});
     const [loading, setLoading] = useState(false);
 
@@ -22,6 +22,8 @@ export default function Cart() {
 
     const totalIQD = getCartTotalIQD();
     const totalUSD = getCartTotal();
+    const shippingFeeIQD = 5000;
+    const finalTotalIQD = totalIQD + shippingFeeIQD;
 
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,13 +51,18 @@ export default function Cart() {
                     customerName: formData.name,
                     phone: formData.phone,
                     address: formData.address,
+                    province: formData.province,
+                    secondaryPhone: formData.secondaryPhone,
+                    orderNotes: formData.orderNotes,
                     items: items.map(item => ({
                         ...item,
                         unitPriceIQD: getPriceAtQuantity(item, item.quantity),
                         unitPriceUSD: getPriceAtQuantity(item, item.quantity) / 1450
                     })),
-                    total: totalIQD,
-                    totalUSD: totalUSD
+                    total: finalTotalIQD,
+                    subtotal: totalIQD,
+                    shippingFee: shippingFeeIQD,
+                    totalUSD: finalTotalIQD / 1450
                 }),
                 signal: controller.signal
             });
@@ -254,7 +261,7 @@ export default function Cart() {
                                         setFormData({ ...formData, phone: e.target.value });
                                         if (errors.phone) setErrors({ ...errors, phone: undefined });
                                     }}
-                                    className={`w-full bg-[#1a1a1a] border ${errors.phone ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-green-600 transition-colors`}
+                                    className={`w-full bg-[#1a1a1a] border ${errors.phone ? 'border-red-500' : 'border-white/10'} rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 transition-colors`}
                                     placeholder={t('cart.phonePlaceholder')}
                                 />
                                 {errors.phone && (
@@ -264,14 +271,63 @@ export default function Cart() {
                                 )}
                             </div>
                             <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.secondaryPhone')}</label>
+                                <input
+                                    type="tel"
+                                    value={formData.secondaryPhone}
+                                    onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
+                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                                    placeholder={t('cart.phonePlaceholder')}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.province')}</label>
+                                <select
+                                    required
+                                    value={formData.province}
+                                    onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 transition-colors appearance-none"
+                                >
+                                    <option value="" disabled>{t('cart.selectProvince')}</option>
+                                    {Object.entries(useLanguage().dictionary.provinces).map(([key, name]) => (
+                                        <option key={key} value={name}>{name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.address')}</label>
                                 <textarea
                                     required
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white h-32 resize-none focus:outline-none focus:border-green-600 transition-colors"
+                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white h-24 resize-none focus:outline-none focus:border-cyan-500 transition-colors"
                                     placeholder={t('cart.addressPlaceholder')}
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">{t('cart.orderNotes')}</label>
+                                <textarea
+                                    value={formData.orderNotes}
+                                    onChange={(e) => setFormData({ ...formData, orderNotes: e.target.value })}
+                                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white h-20 resize-none focus:outline-none focus:border-cyan-500 transition-colors"
+                                    placeholder="..."
+                                />
+                            </div>
+
+                            {/* Price Summary Unit */}
+                            <div className="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-2 mt-4">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-400">{t('cart.subtotal')}</span>
+                                    <span className="text-white font-bold">{totalIQD.toLocaleString()} IQD</span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-400">{t('cart.shippingFee')}</span>
+                                    <span className="text-white font-bold">{shippingFeeIQD.toLocaleString()} IQD</span>
+                                </div>
+                                <div className="pt-2 border-t border-white/10 flex justify-between items-center">
+                                    <span className="text-white font-black uppercase tracking-widest">{t('cart.totalAmountLabel')}</span>
+                                    <span className="text-xl font-black text-primary">{finalTotalIQD.toLocaleString()} IQD</span>
+                                </div>
                             </div>
                         </form>
                     )}
@@ -317,14 +373,19 @@ export default function Cart() {
                                 </button>
                             </>
                         ) : (
-                            <button
-                                type="submit"
-                                form="checkout-form"
-                                disabled={loading}
-                                className="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(22,163,74,0.2)]"
-                            >
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('cart.confirm')}
-                            </button>
+                            <>
+                                <button
+                                    type="submit"
+                                    form="checkout-form"
+                                    disabled={loading}
+                                    className="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(22,163,74,0.2)]"
+                                >
+                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('cart.confirm')}
+                                </button>
+                                <p className="text-[10px] text-gray-500 font-bold text-center mt-3 uppercase tracking-tighter">
+                                    {t('cart.contactAssurance')}
+                                </p>
+                            </>
                         )}
                     </div>
                 )}

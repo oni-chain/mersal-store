@@ -65,8 +65,16 @@
         "maxWholesaleReached": "تم تطبيق العرض المميز للسلة!",
         "basketDiscountInvite": "ملاحظة: إذا أضفت قطعة واحدة فقط من أي منتج ثاني، ستحصل فوراً على عرض مميز لجميع مقتنيات سلتك!",
         "name": "الاسم الكامل",
-        "phone": "رقم واتساب",
+        "phone": "رقم الهاتف الأساسي (واتساب)",
+        "secondaryPhone": "رقم هاتف احتياطي (اختياري)",
+        "province": "المحافظة",
+        "selectProvince": "اختر المحافظة",
         "address": "عنوان التوصيل",
+        "orderNotes": "ملاحظات الطلب (اختياري)",
+        "subtotal": "سعر الماوس باد",
+        "shippingFee": "أجور التوصيل",
+        "totalAmountLabel": "المجموع الكلي",
+        "contactAssurance": "سيصلك اتصال لتأكيد الطلب خلال أقل من 24 ساعة",
         "successTitle": "تم تأكيد الطلب!",
         "successMessage": "لقد تلقينا تفاصيل طلبك عبر واتساب.",
         "continue": "متابعة التسوق",
@@ -93,5 +101,25 @@
     },
     "footer": {
         "rights": "جميع الحقوق محفوظة."
+    },
+    "provinces": {
+        "baghdad": "بغداد",
+        "basra": "البصرة",
+        "nineveh": "نينوى",
+        "erbil": "أربيل",
+        "anbar": "الأنبار",
+        "dhiQar": "ذي قار",
+        "babil": "بابل",
+        "sulaymaniyah": "السليمانية",
+        "diyala": "ديالى",
+        "karbala": "كربلاء",
+        "najaf": "النجف",
+        "salahAlDin": "صلاح الدين",
+        "kirkuk": "كركوك",
+        "maysan": "ميسان",
+        "alQadisiyah": "القادسية",
+        "muthanna": "المثنى",
+        "dohuk": "دهوك",
+        "wasit": "واسط"
     }
 }

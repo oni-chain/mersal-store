@@ -65,8 +65,16 @@
         "maxWholesaleReached": "Special Offer Applied to your cart!",
         "basketDiscountInvite": "Note: Add just one more item of any other kind to unlock special offers for your entire cart!",
         "name": "Full Name",
-        "phone": "WhatsApp Phone Number",
+        "phone": "Primary Phone Number (WhatsApp)",
+        "secondaryPhone": "Secondary Phone Number (Optional)",
+        "province": "Province",
+        "selectProvince": "Select Province",
         "address": "Shipping Address",
+        "orderNotes": "Order Notes (Optional)",
+        "subtotal": "Products Total",
+        "shippingFee": "Shipping Fee",
+        "totalAmountLabel": "Grand Total",
+        "contactAssurance": "You will receive a call to confirm the order within less than 24 hours.",
         "successTitle": "Order Confirmed!",
         "successMessage": "We have received your order details via WhatsApp.",
         "continue": "Continue Shopping",
@@ -93,5 +101,25 @@
     },
     "footer": {
         "rights": "Your Best Service"
+    },
+    "provinces": {
+        "baghdad": "Baghdad",
+        "basra": "Basra",
+        "nineveh": "Nineveh",
+        "erbil": "Erbil",
+        "anbar": "Anbar",
+        "dhiQar": "Dhi Qar",
+        "babil": "Babil",
+        "sulaymaniyah": "Sulaymaniyah",
+        "diyala": "Diyala",
+        "karbala": "Karbala",
+        "najaf": "Najaf",
+        "salahAlDin": "Salah Al-Din",
+        "kirkuk": "Kirkuk",
+        "maysan": "Maysan",
+        "alQadisiyah": "Al-Qadisiyah",
+        "muthanna": "Muthanna",
+        "dohuk": "Dohuk",
+        "wasit": "Wasit"
     }
 }

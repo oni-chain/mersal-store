@@ -12,7 +12,7 @@ const getResendClient = () => {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { customerName, phone, items, total, totalUSD, address } = body;
+        const { customerName, phone, secondaryPhone, province, items, total, subtotal, shippingFee, totalUSD, address, orderNotes } = body;
 
         // Server-side Iraqi Phone Validation
         const iraqiPhoneRegex = /^(07|009647|\+9647|7)\d{9}$/;
@@ -31,9 +31,14 @@ export async function POST(request: Request) {
             .insert([{
                 customer_name: customerName,
                 phone: phone,
+                secondary_phone: secondaryPhone,
+                province: province,
                 address: address,
+                order_notes: orderNotes,
                 items: items,
                 total: total, // IQD Total
+                subtotal: subtotal,
+                shipping_fee: shippingFee,
                 status: 'pending'
             }])
             .select('id')
@@ -67,7 +72,10 @@ export async function POST(request: Request) {
                             <h3 style="margin-top: 0;">Customer Information</h3>
                             <p><strong>Name:</strong> ${customerName}</p>
                             <p><strong>Phone:</strong> ${phone}</p>
+                            ${secondaryPhone ? `<p><strong>Secondary Phone:</strong> ${secondaryPhone}</p>` : ''}
+                            <p><strong>Province:</strong> ${province}</p>
                             <p><strong>Address:</strong> ${address}</p>
+                            ${orderNotes ? `<p><strong>Order Notes:</strong> ${orderNotes}</p>` : ''}
                             <p><strong>Order ID:</strong> ${orderId}</p>
                         </div>
 
@@ -125,8 +133,11 @@ export async function POST(request: Request) {
 
                 const message = `📦 <b>New Order Received - Mersal - مرسال</b>
 \n👤 <b>Customer Name:</b> ${customerName}
-📞 <b>Phone:</b> ${phone}
+📞 <b>Primary Phone:</b> ${phone}
+${secondaryPhone ? `📞 <b>Secondary Phone:</b> ${secondaryPhone}` : ''}
+📍 <b>Province:</b> ${province}
 📍 <b>Address:</b> ${address}
+${orderNotes ? `📝 <b>Notes:</b> ${orderNotes}` : ''}
 \n--------------------------
 🛒 <b>Products:</b>
 ${itemsList}
