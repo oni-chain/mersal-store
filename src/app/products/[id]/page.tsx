@@ -126,81 +126,86 @@ export default function ProductPage() {
                 </Link>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    <div className="space-y-6">
-                        {/* Main Product Image */}
-                        <div className="relative aspect-square bg-[#0c0c0c] rounded-3xl overflow-hidden border border-white/5 shadow-2xl group">
-                            {isLoading ? (
-                                <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
-                                    <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
-                                </div>
-                            ) : (
-                                <>
-                                    <Image
-                                        src={activeImage || product?.image || '/hero_background.png'}
-                                        alt={product?.name || 'Product'}
-                                        fill
-                                        priority
-                                        className="object-cover transition-all duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                </>
-                            )}
-                            {activeTier && (
-                                <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
-                                    {t('products.offerActivated')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}%
-                                </div>
-                            )}
+                    <div className="space-y-8">
+                        {/* Image Gallery Section */}
+                        <div className="flex flex-col md:flex-row gap-4 lg:gap-6">
+                            {/* Main Product Image (Large) */}
+                            <div className="flex-1 relative aspect-square bg-[#0c0c0c] rounded-3xl overflow-hidden border border-white/5 shadow-2xl group order-1">
+                                {isLoading ? (
+                                    <div className="w-full h-full animate-pulse bg-white/5 flex items-center justify-center">
+                                        <Loader2 className="w-12 h-12 animate-spin text-primary/20" />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <Image
+                                            src={activeImage || product?.image || '/hero_background.png'}
+                                            alt={product?.name || 'Product'}
+                                            fill
+                                            priority
+                                            className="object-cover transition-all duration-700 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                    </>
+                                )}
+                                {activeTier && (
+                                    <div className="absolute top-6 left-6 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-full font-black uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce text-sm">
+                                        {t('products.offerActivated')} {Math.round((1 - (unitPriceIQD / (product?.priceIQD || (product!.price * 1450)))) * 100)}%
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Thumbnails (Vertical on Desktop, Horizontal on Mobile) */}
+                            <div className="order-2 w-full md:w-24">
+                                {(() => {
+                                    const allImages = Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[]));
+                                    if (!isLoading && allImages.length > 1) {
+                                        return (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between px-1 md:hidden">
+                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 animate-pulse">
+                                                        {language === 'ar' ? '● اضغط لعرض المزيد' : '● Tap to view more'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex md:flex-col gap-2 sm:gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar pb-2 md:pb-0">
+                                                    {allImages.map((img, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => setActiveImage(img)}
+                                                            className={`relative flex-shrink-0 w-20 h-20 md:w-full aspect-square rounded-xl overflow-hidden border-2 transition-all duration-500 group/thumb ${
+                                                                activeImage === img 
+                                                                ? 'border-primary ring-4 ring-primary/20 scale-105 z-10' 
+                                                                : 'border-white/5 hover:border-white/30 active:scale-95'
+                                                            }`}
+                                                        >
+                                                            <Image
+                                                                src={img}
+                                                                alt={`${product?.name} - image ${idx + 1}`}
+                                                                fill
+                                                                className={`object-cover transition-all duration-500 ${activeImage === img ? 'opacity-100 scale-110' : 'opacity-40 group-hover/thumb:opacity-100'}`}
+                                                            />
+                                                            {/* Interactive Indicator Overlay */}
+                                                            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${activeImage === img ? 'opacity-0' : 'opacity-0 md:group-hover/thumb:opacity-100 bg-primary/10'}`}>
+                                                                <div className="bg-primary/20 backdrop-blur-md p-2 rounded-full border border-primary/30 transform scale-0 md:group-hover/thumb:scale-100 transition-transform duration-500">
+                                                                    <Plus className="w-4 h-4 text-white animate-pulse" />
+                                                                </div>
+                                                            </div>
+                                                            {activeImage === img && (
+                                                                <div className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_rgba(0,212,255,0.8)]" />
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                })()}
+                            </div>
                         </div>
 
-                        {/* Image Gallery Thumbnails */}
-                        {(() => {
-                            const allImages = Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[]));
-                            if (!isLoading && allImages.length > 1) {
-                                return (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between px-1">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 animate-pulse">
-                                                {language === 'ar' ? '● اضغط لعرض المزيد' : '● Tap to view more'}
-                                            </span>
-                                        </div>
-                                        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3">
-                                            {allImages.map((img, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => setActiveImage(img)}
-                                                    className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-500 group/thumb ${
-                                                        activeImage === img 
-                                                        ? 'border-primary ring-4 ring-primary/20 scale-105 z-10' 
-                                                        : 'border-white/5 hover:border-white/30 hover:scale-105 active:scale-95'
-                                                    }`}
-                                                >
-                                                    <Image
-                                                        src={img}
-                                                        alt={`${product?.name} - image ${idx + 1}`}
-                                                        fill
-                                                        className={`object-cover transition-all duration-500 ${activeImage === img ? 'opacity-100 scale-110' : 'opacity-40 group-hover/thumb:opacity-100'}`}
-                                                    />
-                                                    {/* Interactive Indicator Overlay */}
-                                                    <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${activeImage === img ? 'opacity-0' : 'opacity-0 group-hover/thumb:opacity-100 bg-primary/10'}`}>
-                                                        <div className="bg-primary/20 backdrop-blur-md p-2 rounded-full border border-primary/30 transform scale-0 group-hover/thumb:scale-100 transition-transform duration-500">
-                                                            <Plus className="w-4 h-4 text-white animate-pulse" />
-                                                        </div>
-                                                    </div>
-                                                    {activeImage === img && (
-                                                        <div className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_rgba(0,212,255,0.8)]" />
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                );
-                            }
-                            return null;
-                        })()}
-
-                        {/* Technical Specifications - Desktop Only */}
+                        {/* Technical Specifications (Now always under the image gallery) */}
                         {!isLoading && product && (
-                            <div className="hidden md:block space-y-6 pt-4">
+                            <div className="space-y-6 pt-4">
                                 <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
                                     <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
@@ -405,18 +410,7 @@ export default function ProductPage() {
                                 </div>
 
                                 {/* Technical Specifications - Mobile Only */}
-                                <div className="md:hidden space-y-6 pt-12">
-                                    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative overflow-hidden group">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/10" />
-                                        <h3 className="text-xl font-black text-white uppercase tracking-widest border-b border-white/10 pb-4 mb-6 flex items-center gap-3">
-                                            <div className="w-2 h-8 bg-primary rounded-full" />
-                                            {t('products.technicalSpecs')}
-                                        </h3>
-                                        <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap relative z-10">
-                                            {product?.description}
-                                        </p>
-                                    </div>
-                                </div>
+                                {/* This block was removed as per instructions. The main technical specifications block is already present. */}
                             </>
                         )}
                     </div>
