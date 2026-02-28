@@ -5,8 +5,8 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --font-inter: 'Inter', sans-serif;
-  --font-cairo: 'Cairo', sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-cairo: "Cairo", sans-serif;
 }
 
 html,
@@ -24,7 +24,7 @@ body {
 [lang="ar"],
 [dir="rtl"],
 .font-cairo {
-  font-family: var(--font-cairo), 'Cairo', sans-serif;
+  font-family: var(--font-cairo), "Cairo", sans-serif;
   line-height: 1.6;
   letter-spacing: 0;
 }
@@ -103,4 +103,15 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

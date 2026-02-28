@@ -155,46 +155,33 @@ export default function ProductPage() {
                             </div>
 
                             {/* Thumbnails (Vertical on Desktop, Horizontal on Mobile) */}
-                            <div className="order-2 w-full md:w-24">
+                            <div className="order-2 w-full md:w-36 lg:w-40">
                                 {(() => {
                                     const allImages = Array.from(new Set([product?.image, ...(product?.images || [])].filter(Boolean) as string[]));
                                     if (!isLoading && allImages.length > 1) {
                                         return (
-                                            <div className="space-y-4">
-                                                <div className="flex items-center justify-between px-1 md:hidden">
-                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 animate-pulse">
-                                                        {language === 'ar' ? '● اضغط لعرض المزيد' : '● Tap to view more'}
-                                                    </span>
-                                                </div>
-                                                <div className="flex md:flex-col gap-2 sm:gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar pb-2 md:pb-0">
-                                                    {allImages.map((img, idx) => (
-                                                        <button
-                                                            key={idx}
-                                                            onClick={() => setActiveImage(img)}
-                                                            className={`relative flex-shrink-0 w-20 h-20 md:w-full aspect-square rounded-xl overflow-hidden border-2 transition-all duration-500 group/thumb ${
-                                                                activeImage === img 
-                                                                ? 'border-primary ring-4 ring-primary/20 scale-105 z-10' 
-                                                                : 'border-white/5 hover:border-white/30 active:scale-95'
-                                                            }`}
-                                                        >
-                                                            <Image
-                                                                src={img}
-                                                                alt={`${product?.name} - image ${idx + 1}`}
-                                                                fill
-                                                                className={`object-cover transition-all duration-500 ${activeImage === img ? 'opacity-100 scale-110' : 'opacity-40 group-hover/thumb:opacity-100'}`}
-                                                            />
-                                                            {/* Interactive Indicator Overlay */}
-                                                            <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${activeImage === img ? 'opacity-0' : 'opacity-0 md:group-hover/thumb:opacity-100 bg-primary/10'}`}>
-                                                                <div className="bg-primary/20 backdrop-blur-md p-2 rounded-full border border-primary/30 transform scale-0 md:group-hover/thumb:scale-100 transition-transform duration-500">
-                                                                    <Plus className="w-4 h-4 text-white animate-pulse" />
-                                                                </div>
-                                                            </div>
-                                                            {activeImage === img && (
-                                                                <div className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_rgba(0,212,255,0.8)]" />
-                                                            )}
-                                                        </button>
-                                                    ))}
-                                                </div>
+                                            <div className="flex md:flex-col gap-5 md:gap-8 overflow-x-auto md:overflow-visible no-scrollbar py-2 md:py-0">
+                                                {allImages.map((img, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setActiveImage(img)}
+                                                        className={`relative flex-shrink-0 w-32 h-32 md:w-full aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-500 group/thumb ${
+                                                            activeImage === img 
+                                                            ? 'border-primary ring-4 ring-primary/10 scale-105 z-10 shadow-2xl' 
+                                                            : 'border-white/5 hover:border-white/20 active:scale-95'
+                                                        }`}
+                                                    >
+                                                        <Image
+                                                            src={img}
+                                                            alt={`${product?.name} - image ${idx + 1}`}
+                                                            fill
+                                                            className={`object-cover transition-all duration-700 ${activeImage === img ? 'opacity-100 scale-110' : 'opacity-40 group-hover/thumb:opacity-100'}`}
+                                                        />
+                                                        {activeImage === img && (
+                                                            <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
+                                                        )}
+                                                    </button>
+                                                ))}
                                             </div>
                                         );
                                     }
