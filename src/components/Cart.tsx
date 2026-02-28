@@ -277,7 +277,7 @@ export default function Cart() {
                                     value={formData.secondaryPhone}
                                     onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
                                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
-                                    placeholder={t('cart.phonePlaceholder')}
+                                    placeholder={`${t('cart.phonePlaceholder')} ${t('cart.optionalPlaceholder')}`}
                                 />
                             </div>
                             <div>
@@ -310,7 +310,7 @@ export default function Cart() {
                                     value={formData.orderNotes}
                                     onChange={(e) => setFormData({ ...formData, orderNotes: e.target.value })}
                                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-lg p-3 text-white h-16 resize-none focus:outline-none focus:border-cyan-500 transition-colors"
-                                    placeholder="..."
+                                    placeholder={`${t('cart.orderNotes')} ${t('cart.optionalPlaceholder')}`}
                                 />
                             </div>
 
